@@ -15,7 +15,6 @@ COPY config.properties /opt/LODE/src/main/webapp/config.properties
 
 WORKDIR /opt/LODE
 
-EXPOSE 8080
 EXPOSE 9090
 
 ENTRYPOINT ["mvn", "clean", "jetty:run"]

@@ -1,0 +1,22 @@
+version: '2'
+services:
+  virtuoso:
+    build:
+      context: ./
+      dockerfile: ./virtuoso/Dockerfile
+    environment:
+      SPARQL_UPDATE: "true"
+    ports:
+      - "8890:8890"
+  lodview:
+    build: ./lodview
+    ports:
+      - "8080:8080"
+  lodlive:
+    build: ./lodlive
+    ports:
+      - "80:80"
+  lode:
+    build: ./lode
+    ports:
+      - "9090:8080"

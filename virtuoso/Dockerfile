@@ -6,7 +6,7 @@
 # RUN pip install -r requirements.txt
 # RUN chmod +x prep_data.sh \
 #     && ./prep_data.sh \
-#     && python main.py
+#     && python -u main.py
 #
 # ##### VIRTUOSO ENDPOINT IMAGE #####
 # FROM tenforce/virtuoso:1.3.1-virtuoso7.2.2
@@ -46,7 +46,7 @@ RUN pip install -r requirements.txt
 RUN sed -i -e 's/\r$//' prep_data.sh \
     && chmod +x prep_data.sh \
     && ./prep_data.sh \
-    && python main.py
+    && python -u main.py
 
 ##### VIRTUOSO ENDPOINT IMAGE #####
 FROM tenforce/virtuoso:1.3.1-virtuoso7.2.2

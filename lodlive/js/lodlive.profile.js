@@ -1,30 +1,19 @@
 $.jStorage.set(
 	'profile', {
-	// parametri di connessione agli endpoint
 	'connection': {
-		/*matching all the requested URIs*/
-		// 'http' : {
-		'https://w3id.org/stlab/ke/lifo': {
-			description: {
-				en: 'soilproject.org',
-				it: 'soilproject.org',
-			},
+		/* matching all the requested URIs */
+		'https://w3id.org/ocm/': {
+			description: {},
 			// useForInverseSameAs : true,
 			useForInverseSameAs: false,
 			/*change this*/
 			endpoint: 'http://localhost:8890/sparql',
 			examples: [{
-				label: 'Indicatore',
-				uri: 'https://w3id.org/stlab/ke/lifo/onto/Indicator'
+				label: 'Composer',
+				uri: 'https://w3id.org/ocm/ontology/Composer'
 			}, {
-				label: 'Metrica',
-				uri: 'https://w3id.org/stlab/ke/lifo/onto/Metric'
-			}, {
-				label: 'CollezioneIndicatori',
-				uri: 'https://w3id.org/stlab/ke/lifo/onto/IndicatorsCollection'
-			}, {
-				label: 'Luogo',
-				uri: 'https://w3id.org/stlab/ke/lifo/onto/Place'
+				label: 'ClassicalSong',
+				uri: 'https://w3id.org/ocm/ontology/ClassicalSong'
 			}]
 		}
 	},

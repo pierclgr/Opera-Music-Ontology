@@ -12,6 +12,7 @@ RUN cd LodView \
 FROM tomcat:8
 COPY --from=lodview /LodView/target/lodview.war /usr/local/tomcat/webapps/
 
-##### ADD WEBVOWL #####
-RUN wget -O /usr/local/tomcat/webapps/webvowl.war http://vowl.visualdataweb.org/downloads/webvowl_1.1.7.war
+EXPOSE 8080
 
+# Run default server
+# CMD ["catalina.sh", "run"]

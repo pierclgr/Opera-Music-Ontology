@@ -1,5 +1,36 @@
 version: '2'
+
+volumes:
+  shared_volume:
+    driver: local 
+
 services:
+
+  knowledge_graph: 
+    build: ./knowledge_graph
+    volumes:
+      - 'shared_volume:/shared_space'
+
+  lode:
+    build: ./lode
+    ports:
+      - "9090:8080"
+    volumes:
+      - 'shared_volume:/shared_space'
+    depends_on:
+      - "knowledge_graph"
+    entrypoint: ["mvn", "clean", "jetty:run"]
+
+  webvowl:
+    build: ./webvowl
+    ports:
+      - "8888:8080"
+    volumes:
+      - 'shared_volume:/shared_space'
+    depends_on:
+      - "knowledge_graph"
+    command: ["catalina.sh", "run"]
+
   virtuoso:
     build:
       context: ./
@@ -8,11 +39,26 @@ services:
       SPARQL_UPDATE: "true"
     ports:
       - "8890:8890"
+      - "1111:1111"
+    volumes:
+      - 'shared_volume:/shared_space'
+    depends_on:
+      - "knowledge_graph"
+    command: >
+      sh -c "sh /virtuoso-ontologies.sh &&
+             /bin/bash /virtuoso.sh"
+
   lodview:
     build: ./lodview
     ports:
       - "8080:8080"
-  lode:
-    build: ./lode
+    volumes:
+      - 'shared_volume:/shared_space'
+    depends_on:
+      - "knowledge_graph"
+    command: ["catalina.sh", "run"]
+
+  lodlive:
+    build: ./lodlive
     ports:
-      - "9090:8080"
+      - "80:80"

@@ -1,3 +1,0 @@
-pandas
-rdflib
-git+https://github.com/anuzzolese/pyrml

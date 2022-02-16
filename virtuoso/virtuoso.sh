@@ -68,7 +68,7 @@ if [ ! -f ".ontologies_loaded" -a -d "/usr/local/virtuoso-opensource/share/virtu
 then
 	pwd="dba" ;
 	echo "Loading LiFo ontologies." ;
-	echo "ld_dir_all('/usr/local/virtuoso-opensource/share/virtuoso/vad/ontologies/', '*.ttl', 'https://w3id.org/stlab/ke/lifo/');" >> /load_ontologies.sql
+	echo "ld_dir_all('/usr/local/virtuoso-opensource/share/virtuoso/vad/ontologies/', '*.ttl', 'https://w3id.org/ocm/');" >> /load_ontologies.sql
     echo "rdf_loader_run();" >> /load_ontologies.sql
     echo "exec('checkpoint');" >> /load_ontologies.sql
     echo "WAIT_FOR_CHILDREN; " >> /load_ontologies.sql

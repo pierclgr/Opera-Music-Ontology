@@ -52,7 +52,7 @@
 @prefix claros: <http://purl.org/NET/Claros/vocab#> .
 @prefix crm120111: <http://erlangen-crm.org/120111/> .
 @prefix rel: <http://purl.org/vocab/relationship/> .
-@prefix lifo: <https://w3id.org/stlab/ke/lifo/onto> .
+@prefix ocm: <https://w3id.org/ocm/ontology/> .
 
 
 <> a conf:Configuration;
@@ -61,7 +61,7 @@
 ## 	IRIs namespace we use to replace the webapp base (eg. http://localhost:8080/lodview/), an
 ##	installation on dbpedia domain should use <http://dbpedia.org/resource/> 
 	
-	conf:IRInamespace <https://w3id.org/stlab/ke/lifo/>  ;
+	conf:IRInamespace <https://w3id.org/ocm/>  ;
 
 ## 	EndPoint
 

@@ -1,3 +1,4 @@
 pandas
 rdflib
+beautifulsoup4
 git+https://github.com/anuzzolese/pyrml

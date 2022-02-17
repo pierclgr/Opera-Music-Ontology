@@ -2,6 +2,8 @@ from rdflib import Graph, Namespace
 from rdflib.namespace import RDF, RDFS, DC, OWL
 from rdflib.term import URIRef, Literal
 import os
+from scrape_data import scrape_opera_database, CROSS_COMPOSER_URL, CROSS_ERA_URL
+import pandas as pd
 
 # define useful prefixes
 PROTOCOL = 'https'
@@ -21,8 +23,27 @@ ocm_resource = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_TYPE_RESOURCE}/")
 ontology = Graph().parse(ontology_file_path, format="n3")
 knowledge_graph = Graph()
 
-
 ######## EDIT FROM HERE ########
+
+########## DATA PREPARATION ##########
+
+# download opera database from the web using scraping script and load 
+print("########## DATA PREPARATION ##########")
+print("Downloading Opera database from the web, please wait...")
+operadb_operas = scrape_opera_database(category="operas")
+operadb_zarzuela = scrape_opera_database(category="zarzuela")
+operadb_arias = scrape_opera_database(category="arias")
+operadb_zarzuela_arias = scrape_opera_database(category="zarzuela_arias")
+operadb_art_songs = scrape_opera_database(category="art_songs")
+print("Done!")
+
+# open cross-composer dataset from the web
+print("Downloading Cross-Composer dataset from the web, please wait...")
+cross_composer = pd.read_csv(CROSS_COMPOSER_URL)
+print("Done!")
+print("Downloading Cross-Era dataset from the web, please wait...")
+cross_era = pd.read_csv(CROSS_ERA_URL)
+print("Done!")
 
 knowledge_graph.add((
     URIRef(f"{ocm_resource.Composer}/riccardo"),

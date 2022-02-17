@@ -2,13 +2,9 @@
 FROM python:3.9.7-bullseye as app
 
 # create needed folders
-RUN mkdir -p data
 RUN mkdir -p ontologies
 RUN mkdir -p src
 RUN mkdir -p alignment
-
-# copy data files from host data folder to container data folder
-COPY data/ ./data
 
 # copy ontologies files from host ontologies folder to container ontologies folder
 COPY ontologies/ ./ontologies
@@ -24,9 +20,6 @@ COPY requirements.txt ./
 
 # run copied scripts
 RUN pip install -r requirements.txt
-RUN sed -i -e 's/\r$//' src/prep_data.sh \
-    && chmod +x src/prep_data.sh \
-    && src/prep_data.sh
 RUN python -u src/main.py 
 
 # copy ontology to shared space

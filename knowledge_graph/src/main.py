@@ -2,10 +2,12 @@ from rdflib import Graph, Namespace
 from rdflib.namespace import RDF, RDFS, DC, OWL
 from rdflib.term import URIRef, Literal
 import os
-from scrape_data import scrape_opera_database, CROSS_COMPOSER_URL, CROSS_ERA_URL
+from scrape_data import scrape_opera_database, scrape_cross_composer, scrape_cross_era
 import pandas as pd
+import re
+import numpy as np
 
-# define useful prefixes
+# define useful prefixes
 PROTOCOL = 'https'
 DOMAIN = 'w3id.org/ocm'
 FORMAT_ONTOLOGY = 'ontology'
@@ -17,7 +19,7 @@ ontology_file_path = "./ontologies/ontology.owl"
 # define namespace for ontology entities and properties
 ocm = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_ONTOLOGY}/")
 
-# define namespace for ontology resources
+# define namespace for ontology resources
 ocm_resource = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_TYPE_RESOURCE}/")
 
 ontology = Graph().parse(ontology_file_path, format="n3")
@@ -37,12 +39,14 @@ operadb_zarzuela_arias = scrape_opera_database(category="zarzuela_arias")
 operadb_art_songs = scrape_opera_database(category="art_songs")
 print("Done!")
 
-# open cross-composer dataset from the web
-print("Downloading Cross-Composer dataset from the web, please wait...")
-cross_composer = pd.read_csv(CROSS_COMPOSER_URL)
+# load cross-composer dataset from the web
+print("Loading cross-composer dataset...")
+cross_composer = scrape_cross_composer()
 print("Done!")
-print("Downloading Cross-Era dataset from the web, please wait...")
-cross_era = pd.read_csv(CROSS_ERA_URL)
+
+# load cross-era dataset from the web
+print("Loading cross-era dataset...")
+cross_era = scrape_cross_era()
 print("Done!")
 
 knowledge_graph.add((
@@ -86,6 +90,6 @@ print(" knowledge graph statements: {}".format(len(knowledge_graph)))
 print(" > final graph statements: {}".format(len(final_graph)))
 print("######################################################################")
 
-# Serialize graph to .ttl files
-if not os.path.isdir("./ontologies"): os.mkdir("./ontologies")
-final_graph.serialize(destination="./ontologies/final_graph.ttl", format='turtle')
+# # Serialize graph to .ttl files
+# if not os.path.isdir("./ontologies"): os.mkdir("./ontologies")
+# final_graph.serialize(destination="./ontologies/final_graph.ttl", format='turtle')

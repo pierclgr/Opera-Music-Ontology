@@ -1,2 +1,9 @@
 # macOS files
 .DS_Store
+
+# PyCharm files
+.idea/
+__pycache__
+
+# datasets
+*.csv

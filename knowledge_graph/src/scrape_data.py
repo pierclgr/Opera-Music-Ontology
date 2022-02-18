@@ -1,12 +1,17 @@
+import os.path
 import subprocess
 import bs4
 import pandas as pd
 import re
+import wget
 
-
-# define cross-composer and cross-era dataset link
+# define cross-composer and cross-era dataset links
 CROSS_COMPOSER_URL = "https://www.audiolabs-erlangen.de/content/resources/MIR/cross-comp/cross-composer_annotations.csv"
 CROSS_ERA_URL = "https://www.audiolabs-erlangen.de/content/resources/MIR/cross-era/cross-era_annotations.csv"
+
+# define cross-composer and cross-era dataset paths
+CROSS_COMPOSER_PATH = "../data/cross-composer.csv"
+CROSS_ERA_PATH = "../data/cross-era.csv"
 
 
 # Define function to extract table from the queried operadatabase page
@@ -446,3 +451,362 @@ def extract_nationality_lifetime(cell, category):
             raise Exception(f"Category{category} does not exist, try another one.")
         i += 1
     return nationality, lifetime
+
+
+# define function to download file
+def download_file(url, path):
+    if not os.path.isfile(path):
+        print("Downloading dataset from the web, please wait...")
+        wget.download(url, out=path)
+
+
+# define function to scrape cross-composer dataset from web
+def scrape_cross_composer() -> pd.DataFrame:
+    download_file(CROSS_COMPOSER_URL, CROSS_COMPOSER_PATH)
+    cross_composer = pd.read_csv(CROSS_COMPOSER_PATH)
+
+    # fix double composers
+    mask = cross_composer['Artist_filter_no'] == 15
+    brahms_15 = cross_composer.loc[mask].copy()
+    brahms_15.Album = brahms_15.Album.str.split(" / ", expand=True)[1]
+    cross_composer[mask] = brahms_15
+
+    mask = cross_composer['Artist_filter_no'] == 12
+    brahms_12 = cross_composer.loc[mask].copy()
+    composer_regex = re.compile(r'[A-Z ;]+\.: [^/]+/[A-Z ;]+\.: [^/]+')
+    brahms_12.Album = brahms_12.Album.apply(lambda x: x.split(" / ")[0] if composer_regex.match(x) else x)
+    cross_composer[mask] = brahms_12
+
+    mask = cross_composer.Artist_filter_no == 36
+    mendelssohn_36 = cross_composer.loc[mask].copy()
+    mendelssohn_36.Album = mendelssohn_36.Album.str.split(" / ", expand=True)[0]
+    cross_composer[mask] = mendelssohn_36
+
+    # remove composer name from album name column
+    cross_composer.Album = cross_composer.Album.apply(
+        lambda x: re.sub(r"[A-Z/ ]+(;[A-Za-z. /\-]+)*: *", "", x).strip("'").replace("''", "'"))
+
+    # refactor filename
+    cross_composer.Filename = cross_composer.apply(
+        lambda x: x['Filename'].replace(f"{x['CrossComp-ID']}_{x['Class']}_", "")
+            .replace(".mp3", "").replace("_", " ").title(), axis=1)
+
+    # replace iii* pattern with III* in filename
+    cross_composer.Filename = cross_composer.Filename.apply(
+        lambda x: re.sub(r"[Ii][Ii]+", upper_repl, x))
+
+    # refactor instruments and performers
+    cross_composer['Conductor'] = ""
+
+    # define name surname dictionary
+    name_dict = {
+        "Muller-Bruhl": "Müller-Brühl, Helmut",
+        "Standovsky": "Stankovsky, Robert",
+        "Chang": "Chang, Hae Won",
+        "Jando": "Jandó, Jenő",
+        "Ruebsam": "Rübsam, Wolfgang",
+        "Mallon": "Mallon, Kevin",
+        "Dawes": "Dawes, Christopher",
+        "Gallagher": "Gallagher, Kevin R.",
+        "Demmler": "Demmler, Jürgen",
+        "Grabinger": "Grabinger, Peter",
+        "Tillier": "Tillier, Markus",
+        "Kostelnik": "Kostelnik, Steve",
+        "Kodaly Quartet": "Kodály Quartet",
+        "Grunzenhauser": "Gunzenhauser, Stephen",
+        "Gunzenhauser": "Gunzenhauser, Stephen",
+        "Drahos": "Drahos, Béla",
+        "Nicolaus Esterhazy Sinfonia": "Nicolaus Esterházy Sinfonia",
+        "Wit": "Wit, Antoni",
+        "Biret": "Biret, Idil",
+        "Onczay": "Onczay, Csaba",
+        "Takacs": "Takacs, Tamara",
+        "Kaiser": "Kaiser, Karl",
+        "Donose": "Donose, Ruxandra",
+        "Fink": "Fink, Manfred",
+        "Otelli": "Otelli, Claudio",
+        "Papian": "Papian, Hasmik",
+        "Balogh": "Balogh, József",
+        "Tebenikhin": "Tebenikhin, Amir",
+        "Nishizaki": "Nishizaki, Takako",
+        "Pasquier": "Pasquier, Bruno",
+        "Bisengaliev": "Bisengaliev, Marat",
+        "Lenehan": "Lenehan, John",
+        "Kohn": "Köhn, Christian",
+        "Matthies": "Matthies, Silke-Thora",
+        "Parkins": "Parkins, Robert",
+        "Qian": "Qian, Zhou",
+        "Battersby": "Battersby, Edmund",
+        "Kosler": "Košler, Zdeněk",
+        "Halasz": "Halász, Michael",
+        "Kliegel": "Kliegel, Maria",
+        "Klochinsky": "Kolchinsky, Camilla",
+        "Kaler": "Kaler, Ilya",
+        "Peled": "Peled, Amit",
+        "Goldstein": "Goldstein, Alon",
+        "Kopelman": "Kopelman, Jozef",
+        "Goodman": "Goodman, Roy",
+        "Pasichnyk": "Pasichnyk, Olga",
+        "Pomakov": "Pomakov, Robert",
+        "Dixon": "Dixon, Chris",
+        "Mields": "Mields, Dorothee",
+        "Andersen": "Andersen, Ulrike",
+        "Wilde": "Wilde, Mark",
+        "Chuckston": "Cuckston, Alan",
+        "Ward": "Ward, Nicholas",
+        "Camden": "Camden, Anthony",
+        "Girdwood": "Girdwood, Julia",
+        "Wordsworth": "Wordsworth, Barry",
+        "Jean": "Jean, Kenneth",
+        "Garcia": "Garcia, Gerald",
+        "Seifried": "Seifried, Reinhard",
+        "Bramall": "Bramall, Anthony",
+        "Dohnanyi": "Dohnányi, Oliver",
+        "Frith": "Frith, Benjamin",
+        "Chamberlan": "Chamberlan, Jean-Francois",
+        "Grauwels": "Grauwels, Marc",
+        "Devos": "Devos, Luc",
+        "Merscher": "Merscher, Kristin",
+        "Stankovsky": "Stankovsky, Robert",
+        "Markl": "Märkl, Jun",
+        "Elsner": "Elsner, Christian",
+        "Erdmann": "Erdmann, Mojca",
+        "Ziesak": "Ziesak, Ruth",
+        "Sebestyen": "Sebestyén, János",
+        "Kyselak": "Kyselák, Ladislav",
+        "Dickie": "Dickie, John",
+        "Wildner": "Wildner, Johannes",
+        "Harden": "Harden, Wolf",
+        "Kollar": "Kollár, Zsuzsa",
+        "Thompson": "Thompson, Michael",
+        "Rowland": "Rowland, Gilbert",
+        "Terey-Smith": "Terey-Smith, Mary",
+        "Mitchel": "Mitchell, Kenneth",
+        "Parry": "Parry, Elizabeth",
+        "Laux": "Laux, Stefan",
+        "Bastlein": "Bästlein, Ulf",
+        "Eisenlohr": "Eisenlohr, Ulrich",
+        "Bruns": "Bruns, Martin",
+        "Jakobi": "Jakobi, Regina",
+        "Volle": "Volle, Michael",
+        "Scott": "Scott, Sjon",
+        "Trekel": "Trekel, Roman",
+        "Eder Quartet": "Éder Quartet",
+        "Scherbakov": "Scherbakov, Konstantin",
+        "Petrenko": "Petrenko, Vasily",
+        "Kuchar": "Kuchar, Theodore",
+        "Lyndon-Gee": "Lyndon-Gee, Christopher",
+        "Houston": "Houstoun, Michael"
+    }
+
+    for index, row in cross_composer.iterrows():
+        instrumentation = row.Instrumentation
+        conductor = row.Conductor
+        roles = row.Performer.split("; ")
+        instrumentation = instrumentation.split("; ")
+        performer = roles
+        if row.Artist_filter_no == 2:
+            performer = [roles[0], roles[2]]
+            conductor = roles[1]
+            instrumentation.reverse()
+        elif row.Artist_filter_no == 5:
+            instrumentation.reverse()
+            performer = [roles[0]]
+            if 2 < len(roles):
+                performer.append(roles[2])
+            conductor = roles[1]
+        elif row.Artist_filter_no == 9:
+            if len(instrumentation) > 1 and instrumentation[1] == "quartet":
+                performer += performer
+        elif row.Artist_filter_no == 1 or row.Artist_filter_no == 10 or row.Artist_filter_no == 11 or \
+                row.Artist_filter_no == 2 or row.Artist_filter_no == 24 or row.Artist_filter_no == 29 \
+                or row.Artist_filter_no == 35 or row.Artist_filter_no == 38 or row.Artist_filter_no == 42 \
+                or row.Artist_filter_no == 55 or row.Artist_filter_no == 57 or row.Artist_filter_no == 66:
+            performer = [roles[0]]
+            conductor = roles[1]
+            if row.Artist_filter_no == 11:
+                if len(instrumentation) > 1:
+                    performer.append("Nicolaus Esterházy Chorus")
+        elif row.Artist_filter_no == 12:
+            if instrumentation[0] == "orchestra":
+                performer = ["Polish National Radio Symphony Orchestra"] + performer
+                conductor = "Wit"
+                instrumentation.append("piano")
+        elif row.Artist_filter_no == 16:
+            performer = ["Ludwig Quartet", roles[1]]
+            instrumentation.append("viola")
+        elif row.Artist_filter_no == 19:
+            performer = ["Ludwig Quartet"]
+        elif row.Artist_filter_no == 25:
+            performer = [roles[0]]
+            conductor = roles[1].replace(";", "")
+        elif row.Artist_filter_no == 13:
+            if len(instrumentation) > 3:
+                tail_instrumentation = instrumentation[2:]
+                tail_instrumentation.reverse()
+                instrumentation = [instrumentation[0], "quartet", instrumentation[1]] + tail_instrumentation
+            else:
+                instrumentation += ["piano", "cello"]
+            performer = [roles[0], roles[0], "Balogh", roles[1], roles[2]]
+        elif row.Artist_filter_no == 15 or row.Artist_filter_no == 36 or row.Artist_filter_no == 44 \
+                or row.Artist_filter_no == 49:
+            performer = [roles[0], roles[2]]
+            conductor = roles[1]
+        elif row.Artist_filter_no == 17:
+            performer = [""] + performer
+            instrumentation += ["violin", "piano"]
+        elif row.Artist_filter_no == 51:
+            performer = [""] + performer
+        elif row.Artist_filter_no == 22:
+            performer = [""] + performer
+        elif row.Artist_filter_no == 18:
+            if len(instrumentation) > 1:
+                performer = ["", ""] + performer
+                instrumentation += ["piano", "piano"]
+            else:
+                if instrumentation[0] == "piano":
+                    instrumentation += instrumentation
+                else:
+                    performer = [""] + performer
+                    instrumentation += ["piano", "piano"]
+        elif row.Artist_filter_no == 26:
+            if instrumentation[1].lower() == "cello":
+                performer = [roles[0], roles[2]]
+                conductor = roles[1]
+            else:
+                performer = [roles[0], roles[1]]
+                conductor = roles[2]
+        elif row.Artist_filter_no == 27:
+            performer = [roles[0], roles[1]]
+            conductor = roles[2]
+        elif row.Artist_filter_no == 28:
+            performer = [""] + performer
+            tail_instrumentation = instrumentation[1:]
+            tail_instrumentation.reverse()
+            instrumentation = [instrumentation[0]] + tail_instrumentation
+        elif row.Artist_filter_no == 30:
+            instrumentation = ["orchestra"] + instrumentation
+        elif row.Artist_filter_no == 31:
+            instrumentation.reverse()
+            instrumentation = ["orchestra"] + instrumentation
+            performer = [roles[0]] + roles[2:]
+            conductor = roles[1]
+        elif row.Artist_filter_no == 32:
+            performer = [roles[1]]
+            performer += [roles[0]]
+            performer += [roles[3], roles[4], roles[2].replace(" ", ""), roles[5]]
+            instrumentation = ["ensemble"] + instrumentation
+        elif row.Artist_filter_no == 34:
+            instrumentation += [instrumentation[1]]
+            conductor = "Ward"
+            performer = ["City of London Sinfonia"] + performer
+        elif row.Artist_filter_no == 39:
+            performer = [roles[0]]
+            conductor = "; ".join(roles[1:])
+        elif row.Artist_filter_no == 41:
+            performer = ["", roles[0], roles[3], roles[2]]
+            conductor = roles[1]
+        elif row.Artist_filter_no == 43:
+            performer = [""] + roles
+        elif row.Artist_filter_no == 45:
+            conductor = roles[2]
+            performer = roles[0:2] + roles[3:]
+            instrumentation = instrumentation[0:2] + [instrumentation[-1]] + [instrumentation[-2]] + [
+                instrumentation[-2]]
+        elif row.Artist_filter_no == 48:
+            conductor = roles[1]
+            performer = [roles[0], roles[3], roles[2]]
+        elif row.Artist_filter_no == 52:
+            instrumentation += instrumentation
+        elif row.Artist_filter_no == 56:
+            performer = roles[1:]
+            performer += [roles[0]]
+            performer = [""] + performer
+        elif row.Artist_filter_no == 58 or row.Artist_filter_no == 59 or row.Artist_filter_no == 60:
+            performer.reverse()
+        elif row.Artist_filter_no == 61:
+            if len(instrumentation) < 3:
+                instrumentation += ["horn"]
+            performer = [roles[0], roles[2], roles[1]]
+        elif row.Artist_filter_no == 65:
+            performer = [roles[0]]
+            conductor = "Petrenko"
+        elif row.Artist_filter_no == 67:
+            performer = roles[0:2]
+            conductor = roles[2]
+        elif row.Artist_filter_no == 68:
+            performer = roles[0:2]
+            conductor = roles[2]
+
+        diff = len(performer) - len(instrumentation)
+        if diff < 0:
+            [performer.append("") for _ in range(abs(diff))]
+        elif diff > 0:
+            [instrumentation.append("") for _ in range(abs(diff))]
+
+        conductor = conductor.split("; ")
+        conductor = [name_dict[k.strip(" ")].strip(" ") if k.strip(" ") in name_dict else k.strip(" ") for k in
+                     conductor]
+        performer = [name_dict[k.strip(" ")].strip(" ") if k.strip(" ") in name_dict else k.strip(" ") for k in
+                     performer]
+
+        cross_composer.at[index, 'Instrumentation'] = " ".join(instrumentation).title().replace(" ", "; ")
+        cross_composer.at[index, 'Conductor'] = "; ".join(conductor)
+        cross_composer.at[index, 'Performer'] = "; ".join(performer)
+
+    return cross_composer
+
+
+# define function to scrape cross-era dataset from web
+def scrape_cross_era() -> pd.DataFrame:
+    download_file(CROSS_ERA_URL, CROSS_ERA_PATH)
+    cross_era = pd.read_csv(CROSS_ERA_PATH)
+
+    # refactor filename
+    cross_era.Filename = cross_era.apply(
+        lambda x: x['Filename'].replace(f"{x['CrossEra-ID']}_", "").replace(".mp3", ""), axis=1)
+
+    # fix bad composer names
+    for index, row in cross_era.iterrows():
+        if re.match(r"^((?!; ).)*$", row.Composer):
+            composer = row.CompLifetime
+            complifetime = row.Country
+            country = row[-1]
+            cross_era.at[index, 'Composer'] = composer
+            cross_era.at[index, 'CompLifetime'] = complifetime
+            cross_era.at[index, 'Country'] = country
+
+        filename = row.Filename
+        surname = row.Composer.split('; ')[0]
+        name = row.Composer.split("; ")[1]
+        filename = filename.title().replace(surname, "")
+        filename = filename.title().replace(name, "")
+        filename = filename.strip("_")
+        filename = filename.split("_-_")
+
+        if len(filename) > 1:
+            filename = filename[1]
+        else:
+            filename = filename[0]
+
+        cross_era.at[index, 'Filename'] = filename.replace("_", " ").replace(name, "")
+
+    # replace iii* pattern with III* in filename
+    cross_era.Filename = cross_era.Filename.apply(
+        lambda x: re.sub(r"[Ii][Ii]+", upper_repl, x))
+
+    cross_era.drop(columns=cross_era.columns[-1],
+                   axis=1,
+                   inplace=True)
+
+    cross_era.CompLifetime = cross_era.CompLifetime.apply(lambda x: x.replace("....", ""))
+    cross_era.Instrumentation = cross_era.Instrumentation.str.title()
+    cross_era.Mode = cross_era.Mode.str.title()
+    cross_era.Key = cross_era.Key.str.title()
+
+    return cross_era
+
+
+# define function to upper matched content
+def upper_repl(match):
+    return match.group(0).upper()

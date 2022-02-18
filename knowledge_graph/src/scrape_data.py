@@ -404,7 +404,7 @@ def scrape_opera_database(category: str = "operas") -> pd.DataFrame:
 
         # save downloaded dataset
         df.to_csv(csv_file_path)
-        return df
+    return df
 
 
 # define function to extract link from a <td> tag of class popover-content

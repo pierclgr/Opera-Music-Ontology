@@ -23,7 +23,6 @@ COPY data/ ./data
 COPY requirements.txt ./
 
 # run copied scripts
-RUN sh src/prep_data.sh
 RUN pip install -r requirements.txt
 RUN python -u src/main.py 
 

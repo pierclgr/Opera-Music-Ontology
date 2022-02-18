@@ -3,6 +3,7 @@ from rdflib.namespace import RDF, RDFS, DC, OWL
 from rdflib.term import URIRef, Literal
 from scrape_data import scrape_opera_database, scrape_cross_composer, scrape_cross_era
 import os
+import zipfile
 
 # define useful prefixes
 PROTOCOL = 'https'
@@ -11,7 +12,8 @@ FORMAT_ONTOLOGY = 'ontology'
 FORMAT_TYPE_RESOURCE = 'resources'
 
 # define useful folder paths
-ontology_file_path = "./ontologies/ontology.owl"
+ontology_file_path = "../ontologies/ontology.owl"
+dataset_file_path = "../data/data.zip"
 
 # define namespace for ontology entities and properties
 ocm = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_ONTOLOGY}/")
@@ -26,8 +28,14 @@ knowledge_graph = Graph()
 
 ########## DATA PREPARATION ##########
 
-# download opera database from the web using scraping script and load 
 print("########## DATA PREPARATION ##########")
+
+# unzipping datasets in the data folder if present
+if os.path.isfile(dataset_file_path):
+    with zipfile.ZipFile(dataset_file_path, "r") as zip_ref:
+        zip_ref.extractall("../data")
+
+# download opera database from the web using scraping script and load
 print("Downloading Opera database from the web, please wait...")
 operadb_operas = scrape_opera_database(category="operas")
 operadb_zarzuela = scrape_opera_database(category="zarzuela")
@@ -88,6 +96,6 @@ print(" > final graph statements: {}".format(len(final_graph)))
 print("######################################################################")
 
 # Serialize graph to .ttl files
-if not os.path.isdir("./ontologies"):
-    os.mkdir("./ontologies")
-final_graph.serialize(destination="./ontologies/final_graph.ttl", format='turtle')
+if not os.path.isdir("../ontologies"):
+    os.mkdir("../ontologies")
+final_graph.serialize(destination="../ontologies/final_graph.ttl", format='turtle')

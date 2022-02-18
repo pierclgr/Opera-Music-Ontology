@@ -2,6 +2,7 @@ from rdflib import Graph, Namespace
 from rdflib.namespace import RDF, RDFS, DC, OWL
 from rdflib.term import URIRef, Literal
 from scrape_data import scrape_opera_database, scrape_cross_composer, scrape_cross_era
+import os
 
 # define useful prefixes
 PROTOCOL = 'https'
@@ -86,6 +87,7 @@ print(" knowledge graph statements: {}".format(len(knowledge_graph)))
 print(" > final graph statements: {}".format(len(final_graph)))
 print("######################################################################")
 
-# # Serialize graph to .ttl files
-# if not os.path.isdir("./ontologies"): os.mkdir("./ontologies")
-# final_graph.serialize(destination="./ontologies/final_graph.ttl", format='turtle')
+# Serialize graph to .ttl files
+if not os.path.isdir("./ontologies"):
+    os.mkdir("./ontologies")
+final_graph.serialize(destination="./ontologies/final_graph.ttl", format='turtle')

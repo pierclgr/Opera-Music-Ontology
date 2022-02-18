@@ -21,9 +21,6 @@ ocm = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_ONTOLOGY}/")
 # define namespace for ontology resources
 ocm_resource = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_TYPE_RESOURCE}/")
 
-ontology = Graph().parse(ontology_file_path, format="n3")
-knowledge_graph = Graph()
-
 ######## EDIT FROM HERE ########
 
 ########## DATA PREPARATION ##########
@@ -53,6 +50,12 @@ print("Done!")
 print("Loading cross-era dataset...")
 cross_era = scrape_cross_era()
 print("Done!")
+
+########## KNOWLEDGE GRAPH CREATION ##########
+
+print("########## KNOWLEDGE GRAPH CREATION ##########")
+ontology = Graph().parse(ontology_file_path, format="n3")
+knowledge_graph = Graph()
 
 knowledge_graph.add((
     URIRef(f"{ocm_resource.Composer}/riccardo"),

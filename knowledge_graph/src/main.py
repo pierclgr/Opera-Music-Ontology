@@ -33,7 +33,7 @@ if os.path.isfile(dataset_file_path):
         zip_ref.extractall("../data")
 
 # download opera database from the web using scraping script and load
-print("Downloading Opera database from the web, please wait...")
+print("Loading Opera database...")
 operadb_operas = scrape_opera_database(category="operas")
 operadb_zarzuela = scrape_opera_database(category="zarzuela")
 operadb_arias = scrape_opera_database(category="arias")
@@ -42,12 +42,12 @@ operadb_art_songs = scrape_opera_database(category="art_songs")
 print("Done!")
 
 # load cross-composer dataset from the web
-print("Loading cross-composer dataset...")
+print("Loading Cross-Composer dataset...")
 cross_composer = scrape_cross_composer()
 print("Done!")
 
 # load cross-era dataset from the web
-print("Loading cross-era dataset...")
+print("Loading Cross-Era dataset...")
 cross_era = scrape_cross_era()
 print("Done!")
 

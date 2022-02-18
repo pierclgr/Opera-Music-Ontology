@@ -10,394 +10,401 @@ CROSS_COMPOSER_URL = "https://www.audiolabs-erlangen.de/content/resources/MIR/cr
 CROSS_ERA_URL = "https://www.audiolabs-erlangen.de/content/resources/MIR/cross-era/cross-era_annotations.csv"
 
 # define cross-composer and cross-era dataset paths
-CROSS_COMPOSER_PATH = "../data/cross-composer.csv"
-CROSS_ERA_PATH = "../data/cross-era.csv"
+CROSS_COMPOSER_PATH = "../data/cross_composer.csv"
+CROSS_ERA_PATH = "../data/cross_era.csv"
 
 
 # Define function to extract table from the queried operadatabase page
 def scrape_opera_database(category: str = "operas") -> pd.DataFrame:
-    # define url to query and table id to extract based on the chosen category
-    if category == "operas":
-        table_id = "operadatatable"
-        query_page = "https://theoperadatabase.com/operas.php"
 
-        # query chosen webpage to obtain html code
-        html_code = subprocess.check_output(f'curl {query_page}', shell=True)
-        soup = bs4.BeautifulSoup(html_code, features="html.parser")
-        table = soup.find("table", {"id": table_id})
+    csv_file_path = f"../data/operadb_{category}.csv"
 
-        # create matrix corresponding to table
-        # create empty row list
-        df_rows = []
-        # for each tr row
-        for row in table.find_all("tr"):
-            # create empty columns list
-            df_cols = []
-            # if current row is in table head, create headers row
-            if row.parent.name == 'thead':
-                for cell in row.find_all("th"):
-                    cell_text = cell.get_text()
-                    if cell_text == 'Premiere':
-                        df_cols.append('Date')
-                    elif cell_text == 'IMSLP':
-                        df_cols.append('Sheet')
-                    elif cell_text == "Operabase":
-                        pass
-                    else:
-                        df_cols.append(cell_text)
-                # add new headers
-                df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia']
-            # otherwise, it is not table head so it contains data
-            else:
-                # extract row content
-                row_content = row.find_all("td")
-
-                # extract data from rows
-                composer = row_content[0]
-                opera = row_content[1]
-                date = row_content[2]
-                language = row_content[3]
-                sheet = row_content[4]
-                synopsis = row_content[5]
-                wikipedia = row_content[6]
-                libretto = row_content[7]
-
-                # remove a tag from sheet link
-                for a_tag in sheet.find_all("a"):
-                    # get href link and replace its parent content with the link itself
-                    href = a_tag.get('href')
-                    sheet.clear()
-                    sheet.string = href
-
-                # remove a tag from synopsis link
-                for a_tag in synopsis.find_all("a"):
-                    # get href link and replace its parent content with the link itself
-                    href = a_tag.get('href')
-                    synopsis.clear()
-                    synopsis.string = href
-
-                # remove a tag from wikipedia link
-                for a_tag in wikipedia.find_all("a"):
-                    # get href link and replace its parent content with the link itself
-                    href = a_tag.get('href')
-                    wikipedia.clear()
-                    wikipedia.string = href
-
-                # remove a tag from libretto link
-                for a_tag in libretto.find_all("a"):
-                    # get href link and replace its parent content with the link itself
-                    href = a_tag.get('href')
-                    libretto.clear()
-                    libretto.string = href
-
-                # extract composer lifetime, nationality and wikipedia link
-                composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
-                composer_wikipedia_link = extract_link(composer)
-
-                # append extracted information to the end of the row
-                df_cols = [composer.get_text(), opera.get_text(), date.get_text(),
-                           language.get_text(),
-                           sheet.get_text(), synopsis.get_text(), wikipedia.get_text(), libretto.get_text(),
-                           composer_lifetime, composer_nationality, composer_wikipedia_link]
-
-            df_rows.append(df_cols)
-
-        # create dataframe from matrix and return
-        df = pd.DataFrame(df_rows[1:], columns=df_rows[0])
-        return df
-
-    elif category == "zarzuela":
-        table_id = "zarzueladatatable"
-        query_page = "https://theoperadatabase.com/zarzuela.php"
-
-        # query chosen webpage to obtain html code
-        html_code = subprocess.check_output(f'curl {query_page}', shell=True)
-        soup = bs4.BeautifulSoup(html_code, features="html.parser")
-        table = soup.find("table", {"id": table_id})
-
-        # create matrix corresponding to table
-        # create empty row list
-        df_rows = []
-        # for each tr row
-        for row in table.find_all("tr"):
-            # create empty columns list
-            df_cols = []
-            # if current row is in table head, create headers row
-            if row.parent.name == 'thead':
-                for cell in row.find_all("th"):
-                    cell_text = cell.get_text()
-                    if cell_text == 'Score':
-                        df_cols.append('Sheet')
-                    elif cell_text == 'Zarzuela':
-                        df_cols.append('Opera')
-                    else:
-                        df_cols.append(cell_text)
-                # add new headers
-                df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia']
-            # otherwise, it is not table head so it contains data
-            else:
-                # extract row content
-                row_content = row.find_all("td")
-
-                # fix composer tag closigng </td>
-                string_composer_tag = str(row_content[0])
-                string_composer_tag = f"{string_composer_tag[0:string_composer_tag.find('<td>', 2)]}</td>"
-                temp_soup = bs4.BeautifulSoup(string_composer_tag, 'html.parser')
-                row_content[0] = temp_soup.find_all('td')[0]
-
-                # extract data from rows
-                composer = row_content[0]
-                opera = row_content[1]
-                date = row_content[2]
-                language = row_content[3]
-                sheet = row_content[4]
-                synopsis = row_content[5]
-                wikipedia = row_content[6]
-                libretto = row_content[7]
-
-                # remove a tag from sheet link
-                for a_tag in sheet.find_all("a"):
-                    # get href link and replace its parent content with the link itself
-                    href = a_tag.get('href')
-                    sheet.clear()
-                    sheet.string = href
-
-                # remove a tag from synopsis link
-                for a_tag in synopsis.find_all("a"):
-                    # get href link and replace its parent content with the link itself
-                    href = a_tag.get('href')
-                    synopsis.clear()
-                    synopsis.string = href
-
-                # remove a tag from wikipedia link
-                for a_tag in wikipedia.find_all("a"):
-                    # get href link and replace its parent content with the link itself
-                    href = a_tag.get('href')
-                    wikipedia.clear()
-                    wikipedia.string = href
-
-                # remove a tag from libretto link
-                for a_tag in libretto.find_all("a"):
-                    # get href link and replace its parent content with the link itself
-                    href = a_tag.get('href')
-                    libretto.clear()
-                    libretto.string = href
-
-                # extract composer lifetime, nationality and wikipedia link
-                composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
-                composer_wikipedia_link = extract_link(composer)
-
-                # append extracted information to the end of the row
-                df_cols = [composer.get_text().replace("fullname", "?"), opera.get_text(), date.get_text(),
-                           language.get_text(),
-                           sheet.get_text(), synopsis.get_text(), wikipedia.get_text(), libretto.get_text(),
-                           composer_lifetime, composer_nationality, composer_wikipedia_link]
-
-            df_rows.append(df_cols)
-
-        # create dataframe from matrix and return
-        df = pd.DataFrame(df_rows[1:], columns=df_rows[0])
-        return df
-
-    elif category == "arias":
-        table_id = "ariadatatable"
-        query_page = "https://theoperadatabase.com/arias.php"
-
-        # query chosen webpage to obtain html code
-        html_code = subprocess.check_output(f'curl {query_page}', shell=True)
-        soup = bs4.BeautifulSoup(html_code, features="html.parser")
-        table = soup.find("table", {"id": table_id})
-
-        # create matrix corresponding to table
-        # create empty row list
-        df_rows = []
-        # for each tr row
-        for row in table.find_all("tr"):
-            # create empty columns list
-            df_cols = []
-            # if current row is in table head, create headers row
-            if row.parent.name == 'thead':
-                for cell in row.find_all("th"):
-                    cell_text = cell.get_text()
-                    if cell_text == 'PDF':
-                        df_cols.append('Sheet')
-                    elif cell_text == 'Voice/Fach':
-                        df_cols.append('Voice')
-                    else:
-                        df_cols.append(cell_text)
-                # add new headers
-                df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia',
-                                     'Opera link']
-            # otherwise, it is not table head so it contains data
-            else:
-                # extract row content
-                row_content = row.find_all("td")
-
-                # for each cell of the row
-                for cell in row_content:
-                    # remove pdf buttons if available and replace them with their link
-                    for a_tag in cell.find_all("a", {"class": "pdfbutton"}):
-                        # get href link and replace its parent content with the link itself
-                        href = a_tag.get('href')
-                        cell.clear()
-                        cell.string = href
-                    # append cell value to current row
-                    df_cols.append(cell.get_text())
-
-                # extract composer lifetime, nationality and wikipedia link
-                composer = row_content[1]
-                composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
-                composer_wikipedia_link = extract_link(composer)
-
-                # extract album wikipedia link if available
-                opera = row_content[2]
-                opera_link = extract_link(opera)
-
-                # append extracted information to the end of the row
-                df_cols = df_cols + [composer_lifetime, composer_nationality, composer_wikipedia_link, opera_link]
-
-            df_rows.append(df_cols)
-
-        # create dataframe from matrix and return
-        df = pd.DataFrame(df_rows[1:], columns=df_rows[0])
-        return df
-
-    elif category == "zarzuela_arias":
-        table_id = "zarzuelaariadatatable"
-        query_page = "https://theoperadatabase.com/zarzuelaarias.php"
-
-        # query chosen webpage to obtain html code
-        html_code = subprocess.check_output(f'curl {query_page}', shell=True)
-        soup = bs4.BeautifulSoup(html_code, features="html.parser")
-        table = soup.find("table", {"id": table_id})
-
-        # create matrix corresponding to table
-        # create empty row list
-        df_rows = []
-        # for each tr row
-        for row in table.find_all("tr"):
-            # create empty columns list
-            df_cols = []
-            # if current row is in table head, create headers row
-            if row.parent.name == 'thead':
-                for cell in row.find_all("th"):
-                    cell_text = cell.get_text()
-                    if cell_text == 'Composer(s)':
-                        df_cols.append('Composer')
-                    elif cell_text == 'Zarzuela':
-                        df_cols.append('Opera')
-                    elif cell_text == 'PDF':
-                        df_cols.append('Sheet')
-                    else:
-                        df_cols.append(cell_text)
-                # add new headers
-                df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia']
-            # otherwise, it is not table head so it contains data
-            else:
-                # extract row content
-                row_content = row.find_all("td")
-
-                # fix composer tag closigng </td>
-                string_composer_tag = str(row_content[1])
-                string_composer_tag = f"{string_composer_tag[0:string_composer_tag.find('<td>', 2)]}</td>"
-                temp_soup = bs4.BeautifulSoup(string_composer_tag, 'html.parser')
-                row_content[1] = temp_soup.find_all('td')[0]
-
-                # for each cell of the row
-                for cell in row_content:
-                    # remove pdf buttons if available and replace them with their link
-                    for a_tag in cell.find_all("a", {"class": "pdfbutton"}):
-                        # get href link and replace its parent content with the link itself
-                        href = a_tag.get('href')
-                        cell.clear()
-                        cell.string = href
-                    # append cell value to current row
-                    df_cols.append(cell.get_text())
-
-                # extract composer lifetime, nationality and wikipedia link
-                composer = row_content[1]
-                composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
-                composer_wikipedia_link = extract_link(composer)
-
-                # append extracted information to the end of the row
-                df_cols = df_cols + [composer_lifetime, composer_nationality, composer_wikipedia_link]
-
-            df_rows.append(df_cols)
-
-        # create dataframe from matrix and return
-        df = pd.DataFrame(df_rows[1:-1], columns=df_rows[0])
-        return df
-
-    elif category == "art_songs":
-        table_id = "songdatatable"
-        query_page = "https://theoperadatabase.com/songs.php"
-
-        # query chosen webpage to obtain html code
-        html_code = subprocess.check_output(f'curl {query_page}', shell=True)
-        soup = bs4.BeautifulSoup(html_code, features="html.parser")
-        table = soup.find("table", {"id": table_id})
-
-        # create matrix corresponding to table
-        # create empty row list
-        df_rows = []
-        # for each tr row
-        for row in table.find_all("tr"):
-            # create empty columns list
-            df_cols = []
-            # if current row is in table head, create headers row
-            if row.parent.name == 'thead':
-                for cell in row.find_all("th"):
-                    cell_text = cell.get_text()
-                    if cell_text == 'Cycle':
-                        df_cols.append('Album')
-                    elif cell_text == 'Low PDF':
-                        df_cols.append('Low Sheet')
-                    elif cell_text == 'Medium PDF':
-                        df_cols.append('Medium Sheet')
-                    elif cell_text == 'High PDF':
-                        df_cols.append('High Sheet')
-                    else:
-                        df_cols.append(cell_text)
-                # add new headers
-                df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia',
-                                     'Album wikipedia']
-            # otherwise, it is not table head so it contains data
-            else:
-                # extract row content
-                row_content = row.find_all("td")
-                # for each cell of the row
-                for cell in row_content:
-                    # remove pdf buttons if available and replace them with their link
-                    for a_tag in cell.find_all("a", {"class": "pdfbutton"}):
-                        # get href link and replace its parent content with the link itself
-                        href = a_tag.get('href')
-                        cell.clear()
-                        cell.string = href
-                    # append cell value to current row
-                    df_cols.append(cell.get_text())
-
-                # extract objects that may have popup content
-                album = row_content[1]
-                composer = row_content[2]
-
-                # extract album wikipedia link if available
-                album_wikipedia_link = extract_link(album)
-
-                # extract composer lifetime, nationality and wikipedia link
-                composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
-                composer_wikipedia_link = extract_link(composer)
-
-                # append extracted information to the end of the row
-                df_cols = df_cols + [composer_lifetime, composer_nationality, composer_wikipedia_link,
-                                     album_wikipedia_link]
-
-            df_rows.append(df_cols)
-
-        # create dataframe from matrix and return
-        df = pd.DataFrame(df_rows[1:], columns=df_rows[0])
-        return df
+    # check if file exists
+    if os.path.isfile(csv_file_path):
+        df = pd.read_csv(csv_file_path)
     else:
-        raise Exception(f"Category{category} does not exist, try another one.")
+        print(f"Downloading Opera Database {category.replace('_', ' ').title()} from the web, please wait...")
+        # define url to query and table id to extract based on the chosen category
+        if category == "operas":
+            table_id = "operadatatable"
+            query_page = "https://theoperadatabase.com/operas.php"
+
+            # query chosen webpage to obtain html code
+            html_code = subprocess.check_output(f'curl {query_page}', shell=True)
+            soup = bs4.BeautifulSoup(html_code, features="html.parser")
+            table = soup.find("table", {"id": table_id})
+
+            # create matrix corresponding to table
+            # create empty row list
+            df_rows = []
+            # for each tr row
+            for row in table.find_all("tr"):
+                # create empty columns list
+                df_cols = []
+                # if current row is in table head, create headers row
+                if row.parent.name == 'thead':
+                    for cell in row.find_all("th"):
+                        cell_text = cell.get_text()
+                        if cell_text == 'Premiere':
+                            df_cols.append('Date')
+                        elif cell_text == 'IMSLP':
+                            df_cols.append('Sheet')
+                        elif cell_text == "Operabase":
+                            pass
+                        else:
+                            df_cols.append(cell_text)
+                    # add new headers
+                    df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia']
+                # otherwise, it is not table head so it contains data
+                else:
+                    # extract row content
+                    row_content = row.find_all("td")
+
+                    # extract data from rows
+                    composer = row_content[0]
+                    opera = row_content[1]
+                    date = row_content[2]
+                    language = row_content[3]
+                    sheet = row_content[4]
+                    synopsis = row_content[5]
+                    wikipedia = row_content[6]
+                    libretto = row_content[7]
+
+                    # remove a tag from sheet link
+                    for a_tag in sheet.find_all("a"):
+                        # get href link and replace its parent content with the link itself
+                        href = a_tag.get('href')
+                        sheet.clear()
+                        sheet.string = href
+
+                    # remove a tag from synopsis link
+                    for a_tag in synopsis.find_all("a"):
+                        # get href link and replace its parent content with the link itself
+                        href = a_tag.get('href')
+                        synopsis.clear()
+                        synopsis.string = href
+
+                    # remove a tag from wikipedia link
+                    for a_tag in wikipedia.find_all("a"):
+                        # get href link and replace its parent content with the link itself
+                        href = a_tag.get('href')
+                        wikipedia.clear()
+                        wikipedia.string = href
+
+                    # remove a tag from libretto link
+                    for a_tag in libretto.find_all("a"):
+                        # get href link and replace its parent content with the link itself
+                        href = a_tag.get('href')
+                        libretto.clear()
+                        libretto.string = href
+
+                    # extract composer lifetime, nationality and wikipedia link
+                    composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
+                    composer_wikipedia_link = extract_link(composer)
+
+                    # append extracted information to the end of the row
+                    df_cols = [composer.get_text(), opera.get_text(), date.get_text(),
+                               language.get_text(),
+                               sheet.get_text(), synopsis.get_text(), wikipedia.get_text(), libretto.get_text(),
+                               composer_lifetime, composer_nationality, composer_wikipedia_link]
+
+                df_rows.append(df_cols)
+
+            # create dataframe from matrix and return
+            df = pd.DataFrame(df_rows[1:], columns=df_rows[0])
+
+        elif category == "zarzuela":
+            table_id = "zarzueladatatable"
+            query_page = "https://theoperadatabase.com/zarzuela.php"
+
+            # query chosen webpage to obtain html code
+            html_code = subprocess.check_output(f'curl {query_page}', shell=True)
+            soup = bs4.BeautifulSoup(html_code, features="html.parser")
+            table = soup.find("table", {"id": table_id})
+
+            # create matrix corresponding to table
+            # create empty row list
+            df_rows = []
+            # for each tr row
+            for row in table.find_all("tr"):
+                # create empty columns list
+                df_cols = []
+                # if current row is in table head, create headers row
+                if row.parent.name == 'thead':
+                    for cell in row.find_all("th"):
+                        cell_text = cell.get_text()
+                        if cell_text == 'Score':
+                            df_cols.append('Sheet')
+                        elif cell_text == 'Zarzuela':
+                            df_cols.append('Opera')
+                        else:
+                            df_cols.append(cell_text)
+                    # add new headers
+                    df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia']
+                # otherwise, it is not table head so it contains data
+                else:
+                    # extract row content
+                    row_content = row.find_all("td")
+
+                    # fix composer tag closigng </td>
+                    string_composer_tag = str(row_content[0])
+                    string_composer_tag = f"{string_composer_tag[0:string_composer_tag.find('<td>', 2)]}</td>"
+                    temp_soup = bs4.BeautifulSoup(string_composer_tag, 'html.parser')
+                    row_content[0] = temp_soup.find_all('td')[0]
+
+                    # extract data from rows
+                    composer = row_content[0]
+                    opera = row_content[1]
+                    date = row_content[2]
+                    language = row_content[3]
+                    sheet = row_content[4]
+                    synopsis = row_content[5]
+                    wikipedia = row_content[6]
+                    libretto = row_content[7]
+
+                    # remove a tag from sheet link
+                    for a_tag in sheet.find_all("a"):
+                        # get href link and replace its parent content with the link itself
+                        href = a_tag.get('href')
+                        sheet.clear()
+                        sheet.string = href
+
+                    # remove a tag from synopsis link
+                    for a_tag in synopsis.find_all("a"):
+                        # get href link and replace its parent content with the link itself
+                        href = a_tag.get('href')
+                        synopsis.clear()
+                        synopsis.string = href
+
+                    # remove a tag from wikipedia link
+                    for a_tag in wikipedia.find_all("a"):
+                        # get href link and replace its parent content with the link itself
+                        href = a_tag.get('href')
+                        wikipedia.clear()
+                        wikipedia.string = href
+
+                    # remove a tag from libretto link
+                    for a_tag in libretto.find_all("a"):
+                        # get href link and replace its parent content with the link itself
+                        href = a_tag.get('href')
+                        libretto.clear()
+                        libretto.string = href
+
+                    # extract composer lifetime, nationality and wikipedia link
+                    composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
+                    composer_wikipedia_link = extract_link(composer)
+
+                    # append extracted information to the end of the row
+                    df_cols = [composer.get_text().replace("fullname", "?"), opera.get_text(), date.get_text(),
+                               language.get_text(),
+                               sheet.get_text(), synopsis.get_text(), wikipedia.get_text(), libretto.get_text(),
+                               composer_lifetime, composer_nationality, composer_wikipedia_link]
+
+                df_rows.append(df_cols)
+
+            # create dataframe from matrix and return
+            df = pd.DataFrame(df_rows[1:], columns=df_rows[0])
+
+        elif category == "arias":
+            table_id = "ariadatatable"
+            query_page = "https://theoperadatabase.com/arias.php"
+
+            # query chosen webpage to obtain html code
+            html_code = subprocess.check_output(f'curl {query_page}', shell=True)
+            soup = bs4.BeautifulSoup(html_code, features="html.parser")
+            table = soup.find("table", {"id": table_id})
+
+            # create matrix corresponding to table
+            # create empty row list
+            df_rows = []
+            # for each tr row
+            for row in table.find_all("tr"):
+                # create empty columns list
+                df_cols = []
+                # if current row is in table head, create headers row
+                if row.parent.name == 'thead':
+                    for cell in row.find_all("th"):
+                        cell_text = cell.get_text()
+                        if cell_text == 'PDF':
+                            df_cols.append('Sheet')
+                        elif cell_text == 'Voice/Fach':
+                            df_cols.append('Voice')
+                        else:
+                            df_cols.append(cell_text)
+                    # add new headers
+                    df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia',
+                                         'Opera link']
+                # otherwise, it is not table head so it contains data
+                else:
+                    # extract row content
+                    row_content = row.find_all("td")
+
+                    # for each cell of the row
+                    for cell in row_content:
+                        # remove pdf buttons if available and replace them with their link
+                        for a_tag in cell.find_all("a", {"class": "pdfbutton"}):
+                            # get href link and replace its parent content with the link itself
+                            href = a_tag.get('href')
+                            cell.clear()
+                            cell.string = href
+                        # append cell value to current row
+                        df_cols.append(cell.get_text())
+
+                    # extract composer lifetime, nationality and wikipedia link
+                    composer = row_content[1]
+                    composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
+                    composer_wikipedia_link = extract_link(composer)
+
+                    # extract album wikipedia link if available
+                    opera = row_content[2]
+                    opera_link = extract_link(opera)
+
+                    # append extracted information to the end of the row
+                    df_cols = df_cols + [composer_lifetime, composer_nationality, composer_wikipedia_link, opera_link]
+
+                df_rows.append(df_cols)
+
+            # create dataframe from matrix and return
+            df = pd.DataFrame(df_rows[1:], columns=df_rows[0])
+
+        elif category == "zarzuela_arias":
+            table_id = "zarzuelaariadatatable"
+            query_page = "https://theoperadatabase.com/zarzuelaarias.php"
+
+            # query chosen webpage to obtain html code
+            html_code = subprocess.check_output(f'curl {query_page}', shell=True)
+            soup = bs4.BeautifulSoup(html_code, features="html.parser")
+            table = soup.find("table", {"id": table_id})
+
+            # create matrix corresponding to table
+            # create empty row list
+            df_rows = []
+            # for each tr row
+            for row in table.find_all("tr"):
+                # create empty columns list
+                df_cols = []
+                # if current row is in table head, create headers row
+                if row.parent.name == 'thead':
+                    for cell in row.find_all("th"):
+                        cell_text = cell.get_text()
+                        if cell_text == 'Composer(s)':
+                            df_cols.append('Composer')
+                        elif cell_text == 'Zarzuela':
+                            df_cols.append('Opera')
+                        elif cell_text == 'PDF':
+                            df_cols.append('Sheet')
+                        else:
+                            df_cols.append(cell_text)
+                    # add new headers
+                    df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia']
+                # otherwise, it is not table head so it contains data
+                else:
+                    # extract row content
+                    row_content = row.find_all("td")
+
+                    # fix composer tag closigng </td>
+                    string_composer_tag = str(row_content[1])
+                    string_composer_tag = f"{string_composer_tag[0:string_composer_tag.find('<td>', 2)]}</td>"
+                    temp_soup = bs4.BeautifulSoup(string_composer_tag, 'html.parser')
+                    row_content[1] = temp_soup.find_all('td')[0]
+
+                    # for each cell of the row
+                    for cell in row_content:
+                        # remove pdf buttons if available and replace them with their link
+                        for a_tag in cell.find_all("a", {"class": "pdfbutton"}):
+                            # get href link and replace its parent content with the link itself
+                            href = a_tag.get('href')
+                            cell.clear()
+                            cell.string = href
+                        # append cell value to current row
+                        df_cols.append(cell.get_text())
+
+                    # extract composer lifetime, nationality and wikipedia link
+                    composer = row_content[1]
+                    composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
+                    composer_wikipedia_link = extract_link(composer)
+
+                    # append extracted information to the end of the row
+                    df_cols = df_cols + [composer_lifetime, composer_nationality, composer_wikipedia_link]
+
+                df_rows.append(df_cols)
+
+            # create dataframe from matrix and return
+            df = pd.DataFrame(df_rows[1:-1], columns=df_rows[0])
+
+        elif category == "art_songs":
+            table_id = "songdatatable"
+            query_page = "https://theoperadatabase.com/songs.php"
+
+            # query chosen webpage to obtain html code
+            html_code = subprocess.check_output(f'curl {query_page}', shell=True)
+            soup = bs4.BeautifulSoup(html_code, features="html.parser")
+            table = soup.find("table", {"id": table_id})
+
+            # create matrix corresponding to table
+            # create empty row list
+            df_rows = []
+            # for each tr row
+            for row in table.find_all("tr"):
+                # create empty columns list
+                df_cols = []
+                # if current row is in table head, create headers row
+                if row.parent.name == 'thead':
+                    for cell in row.find_all("th"):
+                        cell_text = cell.get_text()
+                        if cell_text == 'Cycle':
+                            df_cols.append('Album')
+                        elif cell_text == 'Low PDF':
+                            df_cols.append('Low Sheet')
+                        elif cell_text == 'Medium PDF':
+                            df_cols.append('Medium Sheet')
+                        elif cell_text == 'High PDF':
+                            df_cols.append('High Sheet')
+                        else:
+                            df_cols.append(cell_text)
+                    # add new headers
+                    df_cols = df_cols + ['Composer lifetime', 'Composer nationality', 'Composer Wikipedia',
+                                         'Album wikipedia']
+                # otherwise, it is not table head so it contains data
+                else:
+                    # extract row content
+                    row_content = row.find_all("td")
+                    # for each cell of the row
+                    for cell in row_content:
+                        # remove pdf buttons if available and replace them with their link
+                        for a_tag in cell.find_all("a", {"class": "pdfbutton"}):
+                            # get href link and replace its parent content with the link itself
+                            href = a_tag.get('href')
+                            cell.clear()
+                            cell.string = href
+                        # append cell value to current row
+                        df_cols.append(cell.get_text())
+
+                    # extract objects that may have popup content
+                    album = row_content[1]
+                    composer = row_content[2]
+
+                    # extract album wikipedia link if available
+                    album_wikipedia_link = extract_link(album)
+
+                    # extract composer lifetime, nationality and wikipedia link
+                    composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
+                    composer_wikipedia_link = extract_link(composer)
+
+                    # append extracted information to the end of the row
+                    df_cols = df_cols + [composer_lifetime, composer_nationality, composer_wikipedia_link,
+                                         album_wikipedia_link]
+
+                df_rows.append(df_cols)
+
+            # create dataframe from matrix and return
+            df = pd.DataFrame(df_rows[1:], columns=df_rows[0])
+        else:
+            raise Exception(f"Category{category} does not exist, try another one.")
+
+        # save downloaded dataset
+        df.to_csv(csv_file_path)
+        return df
 
 
 # define function to extract link from a <td> tag of class popover-content
@@ -754,6 +761,8 @@ def scrape_cross_composer() -> pd.DataFrame:
         cross_composer.at[index, 'Conductor'] = "; ".join(conductor)
         cross_composer.at[index, 'Performer'] = "; ".join(performer)
 
+        cross_composer.to_csv(CROSS_COMPOSER_PATH)
+
     return cross_composer
 
 
@@ -803,6 +812,8 @@ def scrape_cross_era() -> pd.DataFrame:
     cross_era.Instrumentation = cross_era.Instrumentation.str.title()
     cross_era.Mode = cross_era.Mode.str.title()
     cross_era.Key = cross_era.Key.str.title()
+
+    cross_era.to_csv(CROSS_ERA_PATH)
 
     return cross_era
 

@@ -1,11 +1,7 @@
 from rdflib import Graph, Namespace
 from rdflib.namespace import RDF, RDFS, DC, OWL
 from rdflib.term import URIRef, Literal
-import os
 from scrape_data import scrape_opera_database, scrape_cross_composer, scrape_cross_era
-import pandas as pd
-import re
-import numpy as np
 
 # define useful prefixes
 PROTOCOL = 'https'

@@ -492,6 +492,8 @@ print("> Final graph statements: {}".format(len(final_graph)))
 print("######################################################################")
 
 # Serialize graph to .ttl files
+print("Saving final graph...")
 if not os.path.isdir("../ontologies"):
     os.mkdir("../ontologies")
 final_graph.serialize(destination="../ontologies/final_graph.ttl", format='turtle')
+print("Done!")

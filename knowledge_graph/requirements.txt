@@ -2,3 +2,5 @@ pandas
 rdflib
 beautifulsoup4
 wget
+tqdm
+numpy

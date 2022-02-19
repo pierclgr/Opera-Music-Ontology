@@ -4,6 +4,7 @@ import bs4
 import pandas as pd
 import re
 import wget
+import numpy as np
 
 # define cross-composer and cross-era dataset links
 CROSS_COMPOSER_URL = "https://www.audiolabs-erlangen.de/content/resources/MIR/cross-comp/cross-composer_annotations.csv"
@@ -16,12 +17,11 @@ CROSS_ERA_PATH = "../data/cross_era.csv"
 
 # Define function to extract table from the queried operadatabase page
 def scrape_opera_database(category: str = "operas") -> pd.DataFrame:
-
     csv_file_path = f"../data/operadb_{category}.csv"
 
     # check if file exists
     if os.path.isfile(csv_file_path):
-        df = pd.read_csv(csv_file_path)
+        df = pd.read_csv(csv_file_path, keep_default_na=False)
     else:
         print(f"Downloading Opera Database {category.replace('_', ' ').title()} from the web, please wait...")
         # define url to query and table id to extract based on the chosen category
@@ -102,8 +102,14 @@ def scrape_opera_database(category: str = "operas") -> pd.DataFrame:
                     composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
                     composer_wikipedia_link = extract_link(composer)
 
+                    composer_text = composer.get_text()
+                    split = composer_text.split(", ")
+                    if split[0] == "Cui" and len(split) > 2:
+                        composer_text = f"{split[0]}, {split[1]}; {split[2].replace(' ', ', ')}; " \
+                                        f"{split[3].replace(' ', ', ')}; {split[4].replace('and', '').replace(' ', ', ')}"
+
                     # append extracted information to the end of the row
-                    df_cols = [composer.get_text(), opera.get_text(), date.get_text(),
+                    df_cols = [composer_text, opera.get_text(), date.get_text(),
                                language.get_text(),
                                sheet.get_text(), synopsis.get_text(), wikipedia.get_text(), libretto.get_text(),
                                composer_lifetime, composer_nationality, composer_wikipedia_link]
@@ -194,9 +200,18 @@ def scrape_opera_database(category: str = "operas") -> pd.DataFrame:
                     composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
                     composer_wikipedia_link = extract_link(composer)
 
+                    composer_text = composer.get_text()
+                    split = composer_text.split(", ")
+                    composers_list = []
+                    if len(split) > 2 and len(split) % 2 == 0:
+                        split = np.array_split(split, len(split)/2)
+                        for s in split:
+                            composers_list.append(", ". join(s))
+                        composer_text = "; ".join(composers_list)
+
                     # append extracted information to the end of the row
-                    df_cols = [composer.get_text().replace("fullname", "?"), opera.get_text(), date.get_text(),
-                               language.get_text(),
+                    df_cols = [composer_text.replace("fullname", "").replace("?, ", ""), opera.get_text(),
+                               date.get_text(), language.get_text(),
                                sheet.get_text(), synopsis.get_text(), wikipedia.get_text(), libretto.get_text(),
                                composer_lifetime, composer_nationality, composer_wikipedia_link]
 
@@ -321,11 +336,21 @@ def scrape_opera_database(category: str = "operas") -> pd.DataFrame:
 
                     # extract composer lifetime, nationality and wikipedia link
                     composer = row_content[1]
+                    composer_text = composer.get_text()
+                    split = composer_text.split(", ")
+                    composers_list = []
+                    if len(split) > 2 and len(split) % 2 == 0:
+                        split = np.array_split(split, len(split) / 2)
+                        for s in split:
+                            composers_list.append(", ".join(s))
+                        composer_text = "; ".join(composers_list)
                     composer_nationality, composer_lifetime = extract_nationality_lifetime(composer, category)
                     composer_wikipedia_link = extract_link(composer)
 
                     # append extracted information to the end of the row
-                    df_cols = df_cols + [composer_lifetime, composer_nationality, composer_wikipedia_link]
+                    df_cols = [df_cols[0], composer_text.replace("fullname", "").replace("?, ", "").replace("?", "")
+                               .replace(", , ", "")] + df_cols[2:7] + [composer_lifetime, composer_nationality,
+                                                                       composer_wikipedia_link]
 
                 df_rows.append(df_cols)
 
@@ -414,7 +439,7 @@ def extract_link(cell):
     i = 0
     for composer in link:
         if i > 0:
-            info_link += ", "
+            info_link += "; "
         # extract the wikipedia link
         for info in re.findall(r'<a[^>]* href="([^"]*)"', composer.get("data-content")):
             info_link += info
@@ -431,8 +456,8 @@ def extract_nationality_lifetime(cell, category):
     i = 0
     for a_tag in popover:
         if i > 0:
-            nationality += ", "
-            lifetime += ", "
+            nationality += "; "
+            lifetime += "; "
         a_tag_data_content = a_tag.get("data-content").replace("<p>", ",").split(",")
         if category == "zarzuela_arias" or category == "zarzuela":
             a_tag_data_content.remove('')
@@ -470,7 +495,7 @@ def download_file(url, path):
 def scrape_cross_composer() -> pd.DataFrame:
     if not os.path.isfile(CROSS_COMPOSER_PATH):
         download_file(CROSS_COMPOSER_URL, CROSS_COMPOSER_PATH)
-        cross_composer = pd.read_csv(CROSS_COMPOSER_PATH)
+        cross_composer = pd.read_csv(CROSS_COMPOSER_PATH, keep_default_na=False)
 
         # fix double composers
         mask = cross_composer['Artist_filter_no'] == 15
@@ -763,7 +788,7 @@ def scrape_cross_composer() -> pd.DataFrame:
 
         cross_composer.to_csv(CROSS_COMPOSER_PATH)
     else:
-        cross_composer = pd.read_csv(CROSS_COMPOSER_PATH)
+        cross_composer = pd.read_csv(CROSS_COMPOSER_PATH, keep_default_na=False)
 
     return cross_composer
 
@@ -772,7 +797,7 @@ def scrape_cross_composer() -> pd.DataFrame:
 def scrape_cross_era() -> pd.DataFrame:
     if not os.path.isfile(CROSS_ERA_PATH):
         download_file(CROSS_ERA_URL, CROSS_ERA_PATH)
-        cross_era = pd.read_csv(CROSS_ERA_PATH)
+        cross_era = pd.read_csv(CROSS_ERA_PATH, keep_default_na=False)
 
         # refactor filename
         cross_era.Filename = cross_era.apply(
@@ -818,7 +843,7 @@ def scrape_cross_era() -> pd.DataFrame:
 
         cross_era.to_csv(CROSS_ERA_PATH)
     else:
-        cross_era = pd.read_csv(CROSS_ERA_PATH)
+        cross_era = pd.read_csv(CROSS_ERA_PATH, keep_default_na=False)
 
     return cross_era
 

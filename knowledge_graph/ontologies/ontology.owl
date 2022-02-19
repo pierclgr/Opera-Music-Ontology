@@ -39,6 +39,18 @@
          rdfs:range :MusicalComposition .
 
 
+###  https://w3id.org/ocm/ontology/executedBy
+:executedBy rdf:type owl:ObjectProperty ;
+            rdfs:domain :MusicalScore ;
+            rdfs:range :Performer .
+
+
+###  https://w3id.org/ocm/ontology/executesScore
+:executesScore rdf:type owl:ObjectProperty ;
+               rdfs:domain :Performer ;
+               rdfs:range :MusicalScore .
+
+
 ###  https://w3id.org/ocm/ontology/exhibitAt
 :exhibitAt rdf:type owl:ObjectProperty ;
            owl:inverseOf :involvesPerformer ;
@@ -83,8 +95,7 @@
 ###  https://w3id.org/ocm/ontology/hasSynopsis
 :hasSynopsis rdf:type owl:ObjectProperty ;
              owl:inverseOf :synopsisOf ;
-             rdfs:domain :Opera ;
-             rdfs:range :Synopsis .
+             rdfs:domain :Opera .
 
 
 ###  https://w3id.org/ocm/ontology/hostsPerformance
@@ -105,6 +116,13 @@
 :includesSong rdf:type owl:ObjectProperty ;
               rdfs:domain :Collection ;
               rdfs:range :Song .
+
+
+###  https://w3id.org/ocm/ontology/instrumentForScore
+:instrumentForScore rdf:type owl:ObjectProperty ;
+                    owl:inverseOf :scoreForInstrument ;
+                    rdfs:domain :MusicalInstrument ;
+                    rdfs:range :MusicalScore .
 
 
 ###  https://w3id.org/ocm/ontology/involvedInCreation
@@ -185,14 +203,20 @@
 ###  https://w3id.org/ocm/ontology/playedBy
 :playedBy rdf:type owl:ObjectProperty ;
           owl:inverseOf :plays ;
-          rdfs:domain :MusicalScore ;
+          rdfs:domain :MusicalInstrument ;
           rdfs:range :Performer .
 
 
 ###  https://w3id.org/ocm/ontology/plays
 :plays rdf:type owl:ObjectProperty ;
        rdfs:domain :Performer ;
-       rdfs:range :MusicalScore .
+       rdfs:range :MusicalInstrument .
+
+
+###  https://w3id.org/ocm/ontology/scoreForInstrument
+:scoreForInstrument rdf:type owl:ObjectProperty ;
+                    rdfs:domain :MusicalScore ;
+                    rdfs:range :MusicalInstrument .
 
 
 ###  https://w3id.org/ocm/ontology/scoreOfSong
@@ -203,7 +227,6 @@
 
 ###  https://w3id.org/ocm/ontology/synopsisOf
 :synopsisOf rdf:type owl:ObjectProperty ;
-            rdfs:domain :Synopsis ;
             rdfs:range :Opera .
 
 
@@ -220,19 +243,19 @@
 ###  https://w3id.org/ocm/ontology/hasCharacterName
 :hasCharacterName rdf:type owl:DatatypeProperty ;
                   rdfs:domain :Character ;
-                  rdfs:range xsd:string .
+                  rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasKey
 :hasKey rdf:type owl:DatatypeProperty ;
         rdfs:domain :Song ;
-        rdfs:range xsd:string .
+        rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasMode
 :hasMode rdf:type owl:DatatypeProperty ;
          rdfs:domain :Song ;
-         rdfs:range xsd:string .
+         rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasName
@@ -241,16 +264,19 @@
          rdfs:range xsd:string .
 
 
-###  https://w3id.org/ocm/ontology/hasNationality
-:hasNationality rdf:type owl:DatatypeProperty ;
-                rdfs:domain :Person ;
-                rdfs:range xsd:string .
+###  https://w3id.org/ocm/ontology/hasSynopsis
+:hasSynopsis rdf:type owl:DatatypeProperty ;
+             rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasTitle
 :hasTitle rdf:type owl:DatatypeProperty ;
           rdfs:domain :MusicalComposition ;
-          rdfs:range xsd:string .
+          rdfs:range rdfs:Literal .
+
+
+###  https://w3id.org/ocm/ontology/hasWiki
+:hasWiki rdf:type owl:DatatypeProperty .
 
 
 ###  https://w3id.org/ocm/ontology/hasYearOfBirth
@@ -263,6 +289,12 @@
 :hasYearOfDeath rdf:type owl:DatatypeProperty ;
                 rdfs:domain :Person ;
                 rdfs:range xsd:int .
+
+
+###  https://w3id.org/ocm/ontology/isFrom
+:isFrom rdf:type owl:DatatypeProperty ;
+        rdfs:domain :Person ;
+        rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/yearOfPerformance
@@ -356,8 +388,12 @@
 :InstrumentalScore rdf:type owl:Class ;
                    rdfs:subClassOf :MusicalScore ,
                                    [ rdf:type owl:Restriction ;
-                                     owl:onProperty :playedBy ;
+                                     owl:onProperty :executedBy ;
                                      owl:allValuesFrom :Musician
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :scoreForInstrument ;
+                                     owl:allValuesFrom :PhysicalInstrument
                                    ] ;
                    owl:disjointWith :VocalScore .
 
@@ -439,6 +475,10 @@
 :MusicalCreation rdf:type owl:Class .
 
 
+###  https://w3id.org/ocm/ontology/MusicalInstrument
+:MusicalInstrument rdf:type owl:Class .
+
+
 ###  https://w3id.org/ocm/ontology/MusicalScore
 :MusicalScore rdf:type owl:Class ;
               rdfs:subClassOf :MusicalComposition .
@@ -448,8 +488,12 @@
 :Musician rdf:type owl:Class ;
           rdfs:subClassOf :Performer ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty :plays ;
+                            owl:onProperty :executesScore ;
                             owl:allValuesFrom :InstrumentalScore
+                          ] ,
+                          [ rdf:type owl:Restriction ;
+                            owl:onProperty :plays ;
+                            owl:allValuesFrom :PhysicalInstrument
                           ] ;
           owl:disjointWith :Singer .
 
@@ -477,22 +521,35 @@
 :Person rdf:type owl:Class .
 
 
+###  https://w3id.org/ocm/ontology/PhysicalInstrument
+:PhysicalInstrument rdf:type owl:Class ;
+                    rdfs:subClassOf :MusicalInstrument ,
+                                    [ rdf:type owl:Restriction ;
+                                      owl:onProperty :instrumentForScore ;
+                                      owl:allValuesFrom :InstrumentalScore
+                                    ] ,
+                                    [ rdf:type owl:Restriction ;
+                                      owl:onProperty :playedBy ;
+                                      owl:allValuesFrom :Musician
+                                    ] .
+
+
 ###  https://w3id.org/ocm/ontology/Singer
 :Singer rdf:type owl:Class ;
         rdfs:subClassOf :Performer ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :plays ;
+                          owl:onProperty :executesScore ;
                           owl:allValuesFrom :VocalScore
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :plays ;
+                          owl:allValuesFrom :Voice
                         ] .
 
 
 ###  https://w3id.org/ocm/ontology/Song
 :Song rdf:type owl:Class ;
       rdfs:subClassOf :MusicalComposition .
-
-
-###  https://w3id.org/ocm/ontology/Synopsis
-:Synopsis rdf:type owl:Class .
 
 
 ###  https://w3id.org/ocm/ontology/TeathricalPerformance
@@ -503,9 +560,26 @@
 :VocalScore rdf:type owl:Class ;
             rdfs:subClassOf :MusicalScore ,
                             [ rdf:type owl:Restriction ;
-                              owl:onProperty :playedBy ;
+                              owl:onProperty :executedBy ;
                               owl:allValuesFrom :Singer
+                            ] ,
+                            [ rdf:type owl:Restriction ;
+                              owl:onProperty :scoreForInstrument ;
+                              owl:allValuesFrom :Voice
                             ] .
+
+
+###  https://w3id.org/ocm/ontology/Voice
+:Voice rdf:type owl:Class ;
+       rdfs:subClassOf :MusicalInstrument ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :instrumentForScore ;
+                         owl:allValuesFrom :VocalScore
+                       ] ,
+                       [ rdf:type owl:Restriction ;
+                         owl:onProperty :playedBy ;
+                         owl:allValuesFrom :Singer
+                       ] .
 
 
 ###  https://w3id.org/ocm/ontology/Writer

@@ -353,12 +353,7 @@ rdfs:label rdf:type owl:DatatypeProperty .
 
 
 ###  https://w3id.org/ocm/ontology/Character
-:Character rdf:type owl:Class ;
-           rdfs:subClassOf [ rdf:type owl:Restriction ;
-                             owl:onProperty :characterOf ;
-                             owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                             owl:onClass :Aria
-                           ] .
+:Character rdf:type owl:Class .
 
 
 ###  https://w3id.org/ocm/ontology/Collection

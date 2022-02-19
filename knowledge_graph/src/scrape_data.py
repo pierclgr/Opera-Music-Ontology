@@ -70,8 +70,6 @@ def scrape_opera_database(category: str = "operas") -> pd.DataFrame:
                     wikipedia = row_content[6]
                     libretto = row_content[7]
 
-                    print(composer)
-
                     # remove a tag from sheet link
                     for a_tag in sheet.find_all("a"):
                         # get href link and replace its parent content with the link itself
@@ -110,12 +108,8 @@ def scrape_opera_database(category: str = "operas") -> pd.DataFrame:
                         composer_text = f"{split[0]}, {split[1]}; {split[2].replace(' ', ', ')}; " \
                                         f"{split[3].replace(' ', ', ')}; {split[4].replace('and', '').replace(' ', ', ')}"
 
-                    # if composer_text == "Petith, Hans":
-                    #     print(composer)
-                    #     print(composer_wikipedia_link)
-
                     # append extracted information to the end of the row
-                    df_cols = [composer_text, opera.get_text(), date.get_text(),
+                    df_cols = [composer_text, opera.get_text().replace("@", " "), date.get_text(),
                                language.get_text(),
                                sheet.get_text(), synopsis.get_text(), wikipedia.get_text(), libretto.get_text(),
                                composer_lifetime, composer_nationality, composer_wikipedia_link]

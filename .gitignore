@@ -1,12 +1,15 @@
 # macOS files
 .DS_Store
-__MACOSX
+__MACOSX/
 
 # PyCharm files
 .idea/
 __pycache__
 
-# datasets and knowledge graphs
+# datasets and knowledge graphs
 *.csv
 *.ttl
 
+# ignore fuseki server
+jena-fuseki/
+run/

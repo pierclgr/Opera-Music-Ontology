@@ -1,6 +1,6 @@
 import pandas as pd
 from rdflib import Graph, Namespace
-from rdflib.namespace import RDF, RDFS, DC, OWL
+from rdflib.namespace import RDF, RDFS, OWL
 from rdflib.term import URIRef, Literal
 from scrape_data import scrape_opera_database, scrape_cross_composer, scrape_cross_era
 import os
@@ -66,6 +66,9 @@ print("Done!")
 ########## KNOWLEDGE GRAPH CREATION ##########
 print("########## KNOWLEDGE GRAPH CREATION ##########")
 ontology = Graph().parse(ONTOLOGY_FILE_PATH, format="n3")
+
+# arco = Namespace("https://w3id.org/arco/ontology/arco/")
+
 knowledge_graph = Graph()
 
 # Mapping opera database operas and zarzuelas
@@ -146,7 +149,8 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
 
     # extract opera title
     opera = row.Opera
-    opera_id = r.sub('', opera).replace(" ", "_")
+    opera_id = r.sub('', opera).replace(" ", "_").strip("_").strip(
+            "'").title() if opera != "" and opera != "?" else None
 
     # extract opera premiere date
     date = row.Date.replace("n.d.", "").replace("?", "") if row.Date != "" else None
@@ -162,24 +166,25 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
     wiki = row.Wikipedia if row.Wikipedia != "" else None
     libretto = row.Libretto if row.Libretto != "" else None
 
-    # add opera
-    knowledge_graph.add((
-        URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-        RDF.type,
-        URIRef(f"{ocm.Opera}")
-    ))
+    if opera_id:
+        # add opera
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.Opera}/{opera_id}"),
+            RDF.type,
+            URIRef(f"{ocm.Opera}")
+        ))
 
-    knowledge_graph.add((
-        URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-        RDFS.label,
-        Literal(opera)
-    ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Opera}/{opera_id}"),
+        #     RDFS.label,
+        #     Literal(opera)
+        # ))
 
-    knowledge_graph.add((
-        URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-        ocm.hasTitle,
-        Literal(opera)
-    ))
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.Opera}/{opera_id}"),
+            ocm.hasTitle,
+            Literal(opera.title())
+        ))
 
     if synopsis:
         knowledge_graph.add((
@@ -211,11 +216,11 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
             URIRef(f"{ocm.Composer}")
         ))
 
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-            RDFS.label,
-            Literal(composer)
-        ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        #     RDFS.label,
+        #     Literal(composer)
+        # ))
 
         knowledge_graph.add((
             URIRef(f"{ocm_resource.Composer}/{composer_id}"),
@@ -332,11 +337,13 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
 
         # extract opera title
         opera = row.Opera
-        opera_id = r.sub('', opera).replace(" ", "_")
+        opera_id = r.sub('', opera).replace(" ", "_").strip("_").strip(
+            "'").title() if opera != "" and opera != "?" else None
 
         # extract aria title
         aria = row.Aria
-        aria_id = r.sub("", aria).replace(" ", "_")
+        aria_id = r.sub("", aria).replace(" ", "_").strip("_").strip(
+            "'").title() if aria != "" and aria != "?" else None
 
         # extract character title
         character = None
@@ -345,43 +352,45 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
             character = row.Character
             character_id = r.sub("", character).replace(" ", "_")
 
-        # add opera
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-            RDF.type,
-            URIRef(f"{ocm.Opera}")
-        ))
+        if opera_id:
+            # add opera
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.Opera}/{opera_id}"),
+                RDF.type,
+                URIRef(f"{ocm.Opera}")
+            ))
 
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-            RDFS.label,
-            Literal(opera)
-        ))
+            # knowledge_graph.add((
+            #     URIRef(f"{ocm_resource.Opera}/{opera_id}"),
+            #     RDFS.label,
+            #     Literal(opera)
+            # ))
 
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-            ocm.hasTitle,
-            Literal(opera)
-        ))
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.Opera}/{opera_id}"),
+                ocm.hasTitle,
+                Literal(opera.title())
+            ))
 
-        # add Aria
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Aria}/{aria_id}"),
-            RDF.type,
-            URIRef(f"{ocm.Aria}")
-        ))
+        if aria_id:
+            # add Aria
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.Aria}/{aria_id}"),
+                RDF.type,
+                URIRef(f"{ocm.Aria}")
+            ))
 
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Aria}/{aria_id}"),
-            RDFS.label,
-            Literal(aria)
-        ))
+            # knowledge_graph.add((
+            #     URIRef(f"{ocm_resource.Aria}/{aria_id}"),
+            #     RDFS.label,
+            #     Literal(aria)
+            # ))
 
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Aria}/{aria_id}"),
-            ocm.hasTitle,
-            Literal(aria)
-        ))
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.Aria}/{aria_id}"),
+                ocm.hasTitle,
+                Literal(aria.title())
+            ))
 
         # add character
         if character_id:
@@ -391,11 +400,11 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
                 URIRef(f"{ocm.Character}")
             ))
 
-            knowledge_graph.add((
-                URIRef(f"{ocm_resource.Character}/{character_id}"),
-                RDFS.label,
-                Literal(character)
-            ))
+            # knowledge_graph.add((
+            #     URIRef(f"{ocm_resource.Character}/{character_id}"),
+            #     RDFS.label,
+            #     Literal(character)
+            # ))
 
             knowledge_graph.add((
                 URIRef(f"{ocm_resource.Character}/{character_id}"),
@@ -434,11 +443,11 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
                 URIRef(f"{ocm.Composer}")
             ))
 
-            knowledge_graph.add((
-                URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-                RDFS.label,
-                Literal(composer)
-            ))
+            # knowledge_graph.add((
+            #     URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+            #     RDFS.label,
+            #     Literal(composer)
+            # ))
 
             knowledge_graph.add((
                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
@@ -485,6 +494,7 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
 
 final_graph = ontology + knowledge_graph
 final_graph.bind("ocm", ocm)
+# final_graph.bind("arco", arco)
 print("######################################################################")
 print("Ontology statements: {}".format(len(ontology)))
 print("Knowledge graph statements: {}".format(len(knowledge_graph)))

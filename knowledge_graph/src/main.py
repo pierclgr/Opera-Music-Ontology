@@ -254,7 +254,7 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
             #  add link of the libretto
             knowledge_graph.add((
                 URIRef(f"{ocm_resource.Libretto}/{libretto_id}"),
-                ocm.hasLink,
+                ocm.hasDocument,
                 Literal(libretto)
             ))
 

@@ -72,13 +72,6 @@
            rdfs:range :Lyrics .
 
 
-###  https://w3id.org/ocm/ontology/hasMusicSheet
-:hasMusicSheet rdf:type owl:ObjectProperty ;
-               owl:inverseOf :musicSheetOf ;
-               rdfs:domain :MusicalComposition ;
-               rdfs:range :MusicSheet .
-
-
 ###  https://w3id.org/ocm/ontology/hasScore
 :hasScore rdf:type owl:ObjectProperty ;
           owl:inverseOf :scoreOfSong ;
@@ -133,6 +126,13 @@
                 rdfs:range :Author .
 
 
+###  https://w3id.org/ocm/ontology/involvesComposition
+:involvesComposition rdf:type owl:ObjectProperty ;
+                     owl:inverseOf :performedIn ;
+                     rdfs:domain :TheatricalPerformance ;
+                     rdfs:range :MusicalComposition .
+
+
 ###  https://w3id.org/ocm/ontology/involvesConductor
 :involvesConductor rdf:type owl:ObjectProperty ;
                    rdfs:domain :TheatricalPerformance ;
@@ -157,13 +157,6 @@
                    rdfs:range :Performer .
 
 
-###  https://w3id.org/ocm/ontology/involvesSong
-:involvesSong rdf:type owl:ObjectProperty ;
-              owl:inverseOf :performedIn ;
-              rdfs:domain :TheatricalPerformance ;
-              rdfs:range :Song .
-
-
 ###  https://w3id.org/ocm/ontology/lyricsOf
 :lyricsOf rdf:type owl:ObjectProperty ;
           rdfs:domain :Lyrics ;
@@ -172,13 +165,12 @@
 
 ###  https://w3id.org/ocm/ontology/musicSheetOf
 :musicSheetOf rdf:type owl:ObjectProperty ;
-              rdfs:domain :MusicSheet ;
               rdfs:range :MusicalComposition .
 
 
 ###  https://w3id.org/ocm/ontology/performedIn
 :performedIn rdf:type owl:ObjectProperty ;
-             rdfs:domain :Song ;
+             rdfs:domain :MusicalComposition ;
              rdfs:range :TheatricalPerformance .
 
 
@@ -215,18 +207,18 @@
 rdfs:label rdf:type owl:DatatypeProperty .
 
 
+###  https://w3id.org/arco/ontology/cultural-event#hasDocument
+<https://w3id.org/arco/ontology/cultural-event#hasDocument> rdf:type owl:DatatypeProperty ;
+                                                            rdfs:range rdfs:Literal .
+
+
 ###  https://w3id.org/arco/ontology/cultural-event#hasLanguage
 <https://w3id.org/arco/ontology/cultural-event#hasLanguage> rdf:type owl:DatatypeProperty .
 
 
-###  https://w3id.org/arco/ontology/cultural-event#hasLink
-<https://w3id.org/arco/ontology/cultural-event#hasLink> rdf:type owl:DatatypeProperty ;
-                                                        rdfs:range rdfs:Literal .
-
-
 ###  https://w3id.org/arco/ontology/cultural-event#hasMusicSheet
 <https://w3id.org/arco/ontology/cultural-event#hasMusicSheet> rdf:type owl:DatatypeProperty ;
-                                                              rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasLink> ;
+                                                              rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasDocument> ;
                                                               rdfs:domain :MusicalComposition ;
                                                               rdfs:range rdfs:Literal .
 
@@ -265,7 +257,8 @@ rdfs:label rdf:type owl:DatatypeProperty .
 
 ###  https://w3id.org/ocm/ontology/hasSynopsis
 :hasSynopsis rdf:type owl:DatatypeProperty ;
-             rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasLink> ;
+             rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasDocument> ;
+             rdfs:domain :Opera ;
              rdfs:range rdfs:Literal .
 
 
@@ -278,7 +271,7 @@ rdfs:label rdf:type owl:DatatypeProperty .
 
 ###  https://w3id.org/ocm/ontology/hasWiki
 :hasWiki rdf:type owl:DatatypeProperty ;
-         rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasLink> ;
+         rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasDocument> ;
          rdfs:range rdfs:Literal .
 
 
@@ -349,7 +342,7 @@ rdfs:label rdf:type owl:DatatypeProperty .
 :AriaPerformance rdf:type owl:Class ;
                  rdfs:subClassOf :TheatricalPerformance ,
                                  [ rdf:type owl:Restriction ;
-                                   owl:onProperty :includesSong ;
+                                   owl:onProperty :involvesComposition ;
                                    owl:allValuesFrom :Aria
                                  ] .
 
@@ -445,10 +438,6 @@ rdfs:label rdf:type owl:DatatypeProperty .
                           owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
                           owl:onClass :InstrumentalSong
                         ] .
-
-
-###  https://w3id.org/ocm/ontology/MusicSheet
-:MusicSheet rdf:type owl:Class .
 
 
 ###  https://w3id.org/ocm/ontology/MusicWriting

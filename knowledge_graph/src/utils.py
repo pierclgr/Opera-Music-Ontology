@@ -10,7 +10,7 @@ class SituationCreator():
       self.keyword_counter[keyword] += 1
     return ("{}_{}_{}".format(keyword.lower().replace(" ", "_"),
                               self.situa_type,
-                              str(self.keyword_counter[keyword])))
+                              str(self.keyword_counter[keyword]))).strip("_").title()
     
 musical_instruments = ['Violin', 'Horn', 'Orchestra', 'Guitar', 'Viola', 'Cello', 'Quartet', 'Flute', 'Oboe', 'Organ', 'Harpsichord', 'Ensemble', 'Clarinet', 'Piano']
 vocal_instruments = ['Alto', 'Baritone', 'Bass', 'Choir', 'Choral', 'Mezzo-Soprano', 'Soprano', 'Tenor']

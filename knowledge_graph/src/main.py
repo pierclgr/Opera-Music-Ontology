@@ -34,6 +34,9 @@ ocm = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_ONTOLOGY}/")
 # define namespace for ontology resources
 ocm_resource = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_TYPE_RESOURCE}/")
 
+
+
+
 ########## DATA PREPARATION ##########
 
 print("########## DATA PREPARATION ##########")
@@ -62,7 +65,10 @@ print("Loading Cross-Era dataset...")
 cross_era = scrape_cross_era()
 print("Done!")
 
+
 ########## KNOWLEDGE GRAPH CREATION ##########
+
+
 print("########## KNOWLEDGE GRAPH CREATION ##########")
 ontology = Graph().parse(ONTOLOGY_FILE_PATH, format="n3")
 # arco = Namespace("https://w3id.org/arco/ontology/arco/")
@@ -72,6 +78,11 @@ knowledge_graph = Graph()
 performance = SituationCreator(situa_type="performance")
 music_creation = SituationCreator(situa_type="music_creation")
 
+
+
+
+
+# OPERA DATABASE
 # Loading data from opera database operas and zarzuelas
 # - composer, nationality, lifetime
 # - opera
@@ -177,19 +188,19 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
     # ---- add triples ---- #
     # create ids for performance situation and music creation situation
     # something important info about performance are missing: just use an incremental value
-    performance_id = performance.new(
-        keyword="").strip("_").title()
-    music_creation_id = music_creation.new("__".join(list(list_of_composers.keys()))).strip("_").title()
-
-    # music creation situation
-    knowledge_graph.add((
-        URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-        RDF.type,
-        ocm.MusicWriting
-    ))
+    
 
     # add opera
     if opera_id:
+        music_creation_id = music_creation.new("__".join(list(list_of_composers.keys())))
+
+        # music creation situation
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
+            RDF.type,
+            ocm.MusicWriting
+        ))
+
         libretto_id = "Libretto_" + opera_id
 
         knowledge_graph.add((
@@ -266,6 +277,31 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
                     Literal(language)
                 ))
 
+        if date:
+            performance_id = performance.new(keyword="")
+
+            # performance situation
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.TheatricalPerformance}/{performance_id}"),
+                RDF.type,
+                ocm.TheatricalPerformance
+            ))
+
+            # date of premier for the situation 
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.TheatricalPerformance}/{performance_id}"),
+                ocm.yearOfPerformance,
+                Literal(date)
+            ))
+
+            # opera involved in performance
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.TheatricalPerformance}/{performance_id}"),
+                ocm.involvesComposition,
+                URIRef(f"{ocm_resource.Opera}/{opera_id}"),
+            ))
+
+
     # add composer to graph
     for k, v in list_of_composers.items():
         composer_id = k
@@ -331,26 +367,19 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
             ))
 
         # add composer to music creation
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-            ocm.involvedInCreation,
-            URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-        ))
+        if opera:
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+                ocm.involvedInCreation,
+                URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
+            ))
 
-    if date:
-        # performance situation
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.TheatricalPerformance}/{performance_id}"),
-            RDF.type,
-            ocm.TheatricalPerformance
-        ))
 
-        # date of premier for the situation 
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.TheatricalPerformance}/{performance_id}"),
-            ocm.yearOfPerformance,
-            Literal(date)
-        ))
+        
+
+
+
+
 
 # Mapping Opera Database Arias and Zarzuelas Arias
 operadb_arias_zarias = pd.concat([operadb_arias, operadb_zarzuela_arias])

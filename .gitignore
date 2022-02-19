@@ -8,3 +8,5 @@ __pycache__
 # datasets
 *.csv
 *.ttl
+
+__MACOSX

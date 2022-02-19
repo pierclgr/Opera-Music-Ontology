@@ -65,13 +65,6 @@
               rdfs:range :Character .
 
 
-###  https://w3id.org/ocm/ontology/hasLanguage
-:hasLanguage rdf:type owl:ObjectProperty ;
-             owl:inverseOf :languageOf ;
-             rdfs:domain :Lyrics ;
-             rdfs:range :Language .
-
-
 ###  https://w3id.org/ocm/ontology/hasLyrics
 :hasLyrics rdf:type owl:ObjectProperty ;
            owl:inverseOf :lyricsOf ;
@@ -171,12 +164,6 @@
               rdfs:range :Song .
 
 
-###  https://w3id.org/ocm/ontology/languageOf
-:languageOf rdf:type owl:ObjectProperty ;
-            rdfs:domain :Language ;
-            rdfs:range :Lyrics .
-
-
 ###  https://w3id.org/ocm/ontology/lyricsOf
 :lyricsOf rdf:type owl:ObjectProperty ;
           rdfs:domain :Lyrics ;
@@ -228,8 +215,18 @@
 rdfs:label rdf:type owl:DatatypeProperty .
 
 
+###  https://w3id.org/arco/ontology/cultural-event#hasLanguage
+<https://w3id.org/arco/ontology/cultural-event#hasLanguage> rdf:type owl:DatatypeProperty .
+
+
+###  https://w3id.org/arco/ontology/cultural-event#hasLink
+<https://w3id.org/arco/ontology/cultural-event#hasLink> rdf:type owl:DatatypeProperty ;
+                                                        rdfs:range rdfs:Literal .
+
+
 ###  https://w3id.org/arco/ontology/cultural-event#hasMusicSheet
 <https://w3id.org/arco/ontology/cultural-event#hasMusicSheet> rdf:type owl:DatatypeProperty ;
+                                                              rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasLink> ;
                                                               rdfs:domain :MusicalComposition ;
                                                               rdfs:range rdfs:Literal .
 
@@ -268,6 +265,7 @@ rdfs:label rdf:type owl:DatatypeProperty .
 
 ###  https://w3id.org/ocm/ontology/hasSynopsis
 :hasSynopsis rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasLink> ;
              rdfs:range rdfs:Literal .
 
 
@@ -280,6 +278,7 @@ rdfs:label rdf:type owl:DatatypeProperty .
 
 ###  https://w3id.org/ocm/ontology/hasWiki
 :hasWiki rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf <https://w3id.org/arco/ontology/cultural-event#hasLink> ;
          rdfs:range rdfs:Literal .
 
 
@@ -410,10 +409,6 @@ rdfs:label rdf:type owl:DatatypeProperty .
                                     owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
                                     owl:onClass :VocalScore
                                   ] .
-
-
-###  https://w3id.org/ocm/ontology/Language
-:Language rdf:type owl:Class .
 
 
 ###  https://w3id.org/ocm/ontology/Libretto

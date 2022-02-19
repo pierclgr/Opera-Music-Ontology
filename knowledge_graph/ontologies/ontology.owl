@@ -23,14 +23,14 @@
 :conducts rdf:type owl:ObjectProperty ;
           owl:inverseOf :involvesConductor ;
           rdfs:domain :Conductor ;
-          rdfs:range :TeathricalPerformance .
+          rdfs:range :TheatricalPerformance .
 
 
-###  https://w3id.org/ocm/ontology/createdBy
-:createdBy rdf:type owl:ObjectProperty ;
+###  https://w3id.org/ocm/ontology/createdIn
+:createdIn rdf:type owl:ObjectProperty ;
            owl:inverseOf :creates ;
            rdfs:domain :MusicalComposition ;
-           rdfs:range :MusicalComposition .
+           rdfs:range :MusicalCreation .
 
 
 ###  https://w3id.org/ocm/ontology/creates
@@ -41,21 +41,22 @@
 
 ###  https://w3id.org/ocm/ontology/executedBy
 :executedBy rdf:type owl:ObjectProperty ;
+            owl:inverseOf :executes ;
             rdfs:domain :MusicalScore ;
             rdfs:range :Performer .
 
 
-###  https://w3id.org/ocm/ontology/executesScore
-:executesScore rdf:type owl:ObjectProperty ;
-               rdfs:domain :Performer ;
-               rdfs:range :MusicalScore .
+###  https://w3id.org/ocm/ontology/executes
+:executes rdf:type owl:ObjectProperty ;
+          rdfs:domain :Performer ;
+          rdfs:range :MusicalScore .
 
 
 ###  https://w3id.org/ocm/ontology/exhibitAt
 :exhibitAt rdf:type owl:ObjectProperty ;
            owl:inverseOf :involvesPerformer ;
            rdfs:domain :Performer ;
-           rdfs:range :TeathricalPerformance .
+           rdfs:range :TheatricalPerformance .
 
 
 ###  https://w3id.org/ocm/ontology/hasCharacter
@@ -67,15 +68,15 @@
 ###  https://w3id.org/ocm/ontology/hasLanguage
 :hasLanguage rdf:type owl:ObjectProperty ;
              owl:inverseOf :languageOf ;
-             rdfs:domain :Lyric ;
+             rdfs:domain :Lyrics ;
              rdfs:range :Language .
 
 
-###  https://w3id.org/ocm/ontology/hasLyric
-:hasLyric rdf:type owl:ObjectProperty ;
-          owl:inverseOf :lyricOf ;
-          rdfs:domain :MusicalComposition ;
-          rdfs:range :Lyric .
+###  https://w3id.org/ocm/ontology/hasLyrics
+:hasLyrics rdf:type owl:ObjectProperty ;
+           owl:inverseOf :lyricsOf ;
+           rdfs:domain :MusicalComposition ;
+           rdfs:range :Lyrics .
 
 
 ###  https://w3id.org/ocm/ontology/hasMusicSheet
@@ -88,8 +89,8 @@
 ###  https://w3id.org/ocm/ontology/hasScore
 :hasScore rdf:type owl:ObjectProperty ;
           owl:inverseOf :scoreOfSong ;
-          rdfs:domain :MusicalScore ;
-          rdfs:range :Song .
+          rdfs:domain :Song ;
+          rdfs:range :MusicalScore .
 
 
 ###  https://w3id.org/ocm/ontology/hasSynopsis
@@ -102,7 +103,7 @@
 :hostsPerformance rdf:type owl:ObjectProperty ;
                   owl:inverseOf :involvesLocation ;
                   rdfs:domain :Location ;
-                  rdfs:range :TeathricalPerformance .
+                  rdfs:range :TheatricalPerformance .
 
 
 ###  https://w3id.org/ocm/ontology/includedInCollection
@@ -147,13 +148,13 @@
 
 ###  https://w3id.org/ocm/ontology/involvesConductor
 :involvesConductor rdf:type owl:ObjectProperty ;
-                   rdfs:domain :TeathricalPerformance ;
+                   rdfs:domain :TheatricalPerformance ;
                    rdfs:range :Conductor .
 
 
 ###  https://w3id.org/ocm/ontology/involvesLocation
 :involvesLocation rdf:type owl:ObjectProperty ;
-                  rdfs:domain :TeathricalPerformance ;
+                  rdfs:domain :TheatricalPerformance ;
                   rdfs:range :Location .
 
 
@@ -165,27 +166,27 @@
 
 ###  https://w3id.org/ocm/ontology/involvesPerformer
 :involvesPerformer rdf:type owl:ObjectProperty ;
-                   rdfs:domain :TeathricalPerformance ;
+                   rdfs:domain :TheatricalPerformance ;
                    rdfs:range :Performer .
 
 
 ###  https://w3id.org/ocm/ontology/involvesSong
 :involvesSong rdf:type owl:ObjectProperty ;
               owl:inverseOf :performedIn ;
-              rdfs:domain :TeathricalPerformance ;
+              rdfs:domain :TheatricalPerformance ;
               rdfs:range :Song .
 
 
 ###  https://w3id.org/ocm/ontology/languageOf
 :languageOf rdf:type owl:ObjectProperty ;
             rdfs:domain :Language ;
-            rdfs:range :Lyric .
+            rdfs:range :Lyrics .
 
 
-###  https://w3id.org/ocm/ontology/lyricOf
-:lyricOf rdf:type owl:ObjectProperty ;
-         rdfs:domain :Lyric ;
-         rdfs:range :MusicalComposition .
+###  https://w3id.org/ocm/ontology/lyricsOf
+:lyricsOf rdf:type owl:ObjectProperty ;
+          rdfs:domain :Lyrics ;
+          rdfs:range :MusicalComposition .
 
 
 ###  https://w3id.org/ocm/ontology/musicSheetOf
@@ -197,7 +198,7 @@
 ###  https://w3id.org/ocm/ontology/performedIn
 :performedIn rdf:type owl:ObjectProperty ;
              rdfs:domain :Song ;
-             rdfs:range :TeathricalPerformance .
+             rdfs:range :TheatricalPerformance .
 
 
 ###  https://w3id.org/ocm/ontology/playedBy
@@ -221,8 +222,8 @@
 
 ###  https://w3id.org/ocm/ontology/scoreOfSong
 :scoreOfSong rdf:type owl:ObjectProperty ;
-             rdfs:domain :Song ;
-             rdfs:range :MusicalScore .
+             rdfs:domain :MusicalScore ;
+             rdfs:range :Song .
 
 
 ###  https://w3id.org/ocm/ontology/synopsisOf
@@ -234,14 +235,19 @@
 #    Data properties
 #################################################################
 
+###  http://www.w3.org/2000/01/rdf-schema#label
+rdfs:label rdf:type owl:DatatypeProperty .
+
+
 ###  https://w3id.org/ocm/ontology/happenedInyear
 :happenedInyear rdf:type owl:DatatypeProperty ;
                 rdfs:domain :MusicalCreation ;
-                rdfs:range xsd:int .
+                rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasCharacterName
 :hasCharacterName rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf rdfs:label ;
                   rdfs:domain :Character ;
                   rdfs:range rdfs:Literal .
 
@@ -260,8 +266,9 @@
 
 ###  https://w3id.org/ocm/ontology/hasName
 :hasName rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf rdfs:label ;
          rdfs:domain :Person ;
-         rdfs:range xsd:string .
+         rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasSynopsis
@@ -271,24 +278,26 @@
 
 ###  https://w3id.org/ocm/ontology/hasTitle
 :hasTitle rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf rdfs:label ;
           rdfs:domain :MusicalComposition ;
           rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasWiki
-:hasWiki rdf:type owl:DatatypeProperty .
+:hasWiki rdf:type owl:DatatypeProperty ;
+         rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasYearOfBirth
 :hasYearOfBirth rdf:type owl:DatatypeProperty ;
                 rdfs:domain :Person ;
-                rdfs:range xsd:int .
+                rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/hasYearOfDeath
 :hasYearOfDeath rdf:type owl:DatatypeProperty ;
                 rdfs:domain :Person ;
-                rdfs:range xsd:int .
+                rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/ocm/ontology/isFrom
@@ -299,8 +308,8 @@
 
 ###  https://w3id.org/ocm/ontology/yearOfPerformance
 :yearOfPerformance rdf:type owl:DatatypeProperty ;
-                   rdfs:domain :TeathricalPerformance ;
-                   rdfs:range xsd:int .
+                   rdfs:domain :TheatricalPerformance ;
+                   rdfs:range rdfs:Literal .
 
 
 #################################################################
@@ -344,7 +353,7 @@
 
 ###  https://w3id.org/ocm/ontology/AriaPerformance
 :AriaPerformance rdf:type owl:Class ;
-                 rdfs:subClassOf :TeathricalPerformance ,
+                 rdfs:subClassOf :TheatricalPerformance ,
                                  [ rdf:type owl:Restriction ;
                                    owl:onProperty :includesSong ;
                                    owl:allValuesFrom :Aria
@@ -414,9 +423,9 @@
 
 ###  https://w3id.org/ocm/ontology/Libretto
 :Libretto rdf:type owl:Class ;
-          rdfs:subClassOf :Lyric ,
+          rdfs:subClassOf :Lyrics ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty :lyricOf ;
+                            owl:onProperty :lyricsOf ;
                             owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
                             owl:onClass :Opera
                           ] .
@@ -426,20 +435,6 @@
 :Location rdf:type owl:Class .
 
 
-###  https://w3id.org/ocm/ontology/Lyric
-:Lyric rdf:type owl:Class ;
-       rdfs:subClassOf [ rdf:type owl:Restriction ;
-                         owl:onProperty :lyricOf ;
-                         owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
-                         owl:onClass :InstrumentalScore
-                       ] ,
-                       [ rdf:type owl:Restriction ;
-                         owl:onProperty :lyricOf ;
-                         owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
-                         owl:onClass :InstrumentalSong
-                       ] .
-
-
 ###  https://w3id.org/ocm/ontology/LyricWriting
 :LyricWriting rdf:type owl:Class ;
               rdfs:subClassOf :MusicalCreation ,
@@ -447,6 +442,20 @@
                                 owl:onProperty :involvesAuthor ;
                                 owl:allValuesFrom :Writer
                               ] .
+
+
+###  https://w3id.org/ocm/ontology/Lyrics
+:Lyrics rdf:type owl:Class ;
+        rdfs:subClassOf [ rdf:type owl:Restriction ;
+                          owl:onProperty :lyricsOf ;
+                          owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+                          owl:onClass :InstrumentalScore
+                        ] ,
+                        [ rdf:type owl:Restriction ;
+                          owl:onProperty :lyricsOf ;
+                          owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+                          owl:onClass :InstrumentalSong
+                        ] .
 
 
 ###  https://w3id.org/ocm/ontology/MusicSheet
@@ -465,6 +474,10 @@
 ###  https://w3id.org/ocm/ontology/MusicalComposition
 :MusicalComposition rdf:type owl:Class ;
                     rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                      owl:onProperty :createdIn ;
+                                      owl:allValuesFrom :MusicalCreation
+                                    ] ,
+                                    [ rdf:type owl:Restriction ;
                                       owl:onProperty :hasTitle ;
                                       owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
                                       owl:onDataRange xsd:string
@@ -472,7 +485,11 @@
 
 
 ###  https://w3id.org/ocm/ontology/MusicalCreation
-:MusicalCreation rdf:type owl:Class .
+:MusicalCreation rdf:type owl:Class ;
+                 rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                   owl:onProperty :involvesAuthor ;
+                                   owl:allValuesFrom :Author
+                                 ] .
 
 
 ###  https://w3id.org/ocm/ontology/MusicalInstrument
@@ -488,7 +505,7 @@
 :Musician rdf:type owl:Class ;
           rdfs:subClassOf :Performer ,
                           [ rdf:type owl:Restriction ;
-                            owl:onProperty :executesScore ;
+                            owl:onProperty :executes ;
                             owl:allValuesFrom :InstrumentalScore
                           ] ,
                           [ rdf:type owl:Restriction ;
@@ -538,7 +555,7 @@
 :Singer rdf:type owl:Class ;
         rdfs:subClassOf :Performer ,
                         [ rdf:type owl:Restriction ;
-                          owl:onProperty :executesScore ;
+                          owl:onProperty :executes ;
                           owl:allValuesFrom :VocalScore
                         ] ,
                         [ rdf:type owl:Restriction ;
@@ -552,8 +569,8 @@
       rdfs:subClassOf :MusicalComposition .
 
 
-###  https://w3id.org/ocm/ontology/TeathricalPerformance
-:TeathricalPerformance rdf:type owl:Class .
+###  https://w3id.org/ocm/ontology/TheatricalPerformance
+:TheatricalPerformance rdf:type owl:Class .
 
 
 ###  https://w3id.org/ocm/ontology/VocalScore
@@ -589,6 +606,18 @@
                           owl:onProperty :involvedInCreation ;
                           owl:allValuesFrom :LyricWriting
                         ] .
+
+
+#################################################################
+#    General axioms
+#################################################################
+
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( :Collection
+                :MusicalScore
+                :Song
+              )
+] .
 
 
 ###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi

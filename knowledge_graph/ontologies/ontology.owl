@@ -421,8 +421,7 @@ rdfs:label rdf:type owl:DatatypeProperty .
           rdfs:subClassOf :Lyrics ,
                           [ rdf:type owl:Restriction ;
                             owl:onProperty :lyricsOf ;
-                            owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
-                            owl:onClass :Opera
+                            owl:allValuesFrom :Opera
                           ] .
 
 

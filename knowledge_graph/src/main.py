@@ -561,14 +561,14 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
                 # vocal score for voice (instrument)
                 knowledge_graph.add((
                     URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
-                    RDF.scoreForInstrument,
+                    ocm.scoreForInstrument,
                     URIRef(f"{ocm_resource.Voice}/{voice}")
                 ))
 
                 # add score to aria
                 knowledge_graph.add((
                     URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
-                    RDF.scoreOfSong,
+                    ocm.scoreOfSong,
                     URIRef(f"{ocm_resource.Aria}/{aria_id}")
                 ))
 

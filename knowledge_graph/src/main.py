@@ -547,20 +547,31 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
 
             # add vocal score(s)
             for voice in voices:
-                
+
                 voice_id = voice.replace(" ", "_").title()
                 score_id = f"{voice_id}_score_{aria_id}"
-
+                
+                # create vocal score
                 knowledge_graph.add((
                     URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
                     RDF.type,
-                    URIRef(f"{ocm}VocalScore")
+                    ocm.VocalScore
                 ))
 
+                # vocal score for voice (instrument)
+                knowledge_graph.add((
+                    URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
+                    RDF.scoreForInstrument,
+                    URIRef(f"{ocm_resource.Voice}/{voice}")
+                ))
 
+                # add score to aria
+                knowledge_graph.add((
+                    URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
+                    RDF.scoreOfSong,
+                    URIRef(f"{ocm_resource.Aria}/{aria_id}")
+                ))
 
-        
-    
     
     # add composer to graph
     for k, v in list_of_composers.items():
@@ -658,13 +669,6 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
                     ocm.creates,
                     URIRef(f"{ocm_resource.Opera}/{opera_id}")
                 ))
-
-            
-
-
-
-
-            
 
             
 

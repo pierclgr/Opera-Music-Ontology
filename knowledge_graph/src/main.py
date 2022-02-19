@@ -34,10 +34,6 @@ ocm = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_ONTOLOGY}/")
 # define namespace for ontology resources
 ocm_resource = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_TYPE_RESOURCE}/")
 
-
-
-
-
 ########## DATA PREPARATION ##########
 
 print("########## DATA PREPARATION ##########")
@@ -66,9 +62,6 @@ print("Loading Cross-Era dataset...")
 cross_era = scrape_cross_era()
 print("Done!")
 
-
-
-
 ########## KNOWLEDGE GRAPH CREATION ##########
 print("########## KNOWLEDGE GRAPH CREATION ##########")
 ontology = Graph().parse(ONTOLOGY_FILE_PATH, format="n3")
@@ -76,9 +69,8 @@ ontology = Graph().parse(ONTOLOGY_FILE_PATH, format="n3")
 
 knowledge_graph = Graph()
 # create situation creators
-performance = SituationCreator(situa_type = "performance")
-music_creation = SituationCreator(situa_type = "music_creation")
-
+performance = SituationCreator(situa_type="performance")
+music_creation = SituationCreator(situa_type="music_creation")
 
 # Loading data from opera database operas and zarzuelas
 # - composer, nationality, lifetime
@@ -88,7 +80,6 @@ music_creation = SituationCreator(situa_type = "music_creation")
 # - music sheet, synopsis, wiki, libretto
 # situations -> music creation, performance
 operadb_operas_zarzuela = pd.concat([operadb_operas, operadb_zarzuela])
-
 
 print("Mapping Opera Database Operas and Zarzuelas...")
 r = re.compile(r'[{}]+'.format(re.escape(punctuation)))
@@ -167,7 +158,7 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
     # extract opera title
     opera = row.Opera
     opera_id = r.sub('', opera).replace(" ", "_").strip("_").strip(
-            "'").title() if opera != "" and opera != "?" else None
+        "'").title() if opera != "" and opera != "?" else None
 
     # extract opera premiere date
     date = row.Date.replace("n.d.", "").replace("?", "") if row.Date != "" else None
@@ -182,19 +173,36 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
     synopsis = row.Synopsis if row.Synopsis != "" else None
     wiki = row.Wikipedia if row.Wikipedia != "" else None
     libretto = row.Libretto if row.Libretto != "" else None
-    libretto_id = "Libretto_" + opera_id
 
     # ---- add triples ---- #
     # create ids for performance situation and music creation situation
-    performance_id = performance.new(keyword="") # something important info about performance are missing: just use an incremental value
-    music_creation_id = music_creation.new("__".join(list(list_of_composers.keys())))
+    # something important info about performance are missing: just use an incremental value
+    performance_id = performance.new(
+        keyword="").strip("_").title()
+    music_creation_id = music_creation.new("__".join(list(list_of_composers.keys()))).strip("_").title()
+
+    # music creation situation
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
+        RDF.type,
+        ocm.MusicWriting
+    ))
 
     # add opera
     if opera_id:
+        libretto_id = "Libretto_" + opera_id
+
         knowledge_graph.add((
             URIRef(f"{ocm_resource.Opera}/{opera_id}"),
             RDF.type,
             ocm.Opera
+        ))
+
+        # add opera to music creation
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
+            ocm.creates,
+            URIRef(f"{ocm_resource.Opera}/{opera_id}")
         ))
 
         # add title to opera
@@ -227,7 +235,7 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
                 ocm.hasMusicSheet,
                 Literal(sheet)
             ))
-        
+
         # add libretto of the opera
         if libretto:
             knowledge_graph.add((
@@ -257,13 +265,6 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
                     ocm.hasLanguage,
                     Literal(language)
                 ))
-
-    # music creation situation
-    knowledge_graph.add((
-        URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-        RDF.type,
-        ocm.MusicalCreation
-    ))
 
     # add composer to graph
     for k, v in list_of_composers.items():
@@ -333,7 +334,7 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
         knowledge_graph.add((
             URIRef(f"{ocm_resource.Composer}/{composer_id}"),
             ocm.involvedInCreation,
-            URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
+            URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
         ))
 
     if date:
@@ -445,7 +446,7 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
                 RDF.type,
                 URIRef(f"{ocm.Opera}")
             ))
-            
+
             knowledge_graph.add((
                 URIRef(f"{ocm_resource.Opera}/{opera_id}"),
                 ocm.hasTitle,

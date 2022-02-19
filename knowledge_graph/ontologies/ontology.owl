@@ -449,11 +449,6 @@ rdfs:label rdf:type owl:DatatypeProperty .
                     rdfs:subClassOf [ rdf:type owl:Restriction ;
                                       owl:onProperty :createdIn ;
                                       owl:allValuesFrom :MusicalCreation
-                                    ] ,
-                                    [ rdf:type owl:Restriction ;
-                                      owl:onProperty :hasTitle ;
-                                      owl:maxQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-                                      owl:onDataRange xsd:string
                                     ] .
 
 

@@ -367,7 +367,7 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
             ))
 
         # add composer to music creation
-        if opera:
+        if opera_id:
             knowledge_graph.add((
                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
                 ocm.involvedInCreation,

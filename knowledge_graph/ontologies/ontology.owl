@@ -203,13 +203,19 @@
 #    Data properties
 #################################################################
 
+###  http://www.w3.org/2000/01/rdf-schema#label
+rdfs:label rdf:type owl:DatatypeProperty .
+
+
 ###  https://w3id.org/arco/ontology/cultural-event#hasDocument
 <https://w3id.org/arco/ontology/cultural-event#hasDocument> rdf:type owl:DatatypeProperty ;
                                                             rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/arco/ontology/cultural-event#hasLanguage
-<https://w3id.org/arco/ontology/cultural-event#hasLanguage> rdf:type owl:DatatypeProperty .
+<https://w3id.org/arco/ontology/cultural-event#hasLanguage> rdf:type owl:DatatypeProperty ;
+                                                            rdfs:domain :Lyrics ;
+                                                            rdfs:range rdfs:Literal .
 
 
 ###  https://w3id.org/arco/ontology/cultural-event#hasMusicSheet
@@ -227,7 +233,7 @@
 
 ###  https://w3id.org/ocm/ontology/hasCharacterName
 :hasCharacterName rdf:type owl:DatatypeProperty ;
-                  rdfs:subPropertyOf owl:topDataProperty ;
+                  rdfs:subPropertyOf rdfs:label ;
                   rdfs:domain :Character ;
                   rdfs:range rdfs:Literal .
 
@@ -246,7 +252,7 @@
 
 ###  https://w3id.org/ocm/ontology/hasName
 :hasName rdf:type owl:DatatypeProperty ;
-         rdfs:subPropertyOf owl:topDataProperty ;
+         rdfs:subPropertyOf rdfs:label ;
          rdfs:domain :Person ;
          rdfs:range rdfs:Literal .
 
@@ -260,7 +266,7 @@
 
 ###  https://w3id.org/ocm/ontology/hasTitle
 :hasTitle rdf:type owl:DatatypeProperty ;
-          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:subPropertyOf rdfs:label ;
           rdfs:domain :MusicalComposition ;
           rdfs:range rdfs:Literal .
 

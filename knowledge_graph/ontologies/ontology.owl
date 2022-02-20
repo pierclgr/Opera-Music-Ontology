@@ -385,6 +385,11 @@ rdfs:label rdf:type owl:DatatypeProperty .
                                    [ rdf:type owl:Restriction ;
                                      owl:onProperty :scoreForInstrument ;
                                      owl:allValuesFrom :PhysicalInstrument
+                                   ] ,
+                                   [ rdf:type owl:Restriction ;
+                                     owl:onProperty :hasLyrics ;
+                                     owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+                                     owl:onClass :Lyrics
                                    ] ;
                    owl:disjointWith :VocalScore .
 
@@ -392,6 +397,11 @@ rdfs:label rdf:type owl:DatatypeProperty .
 ###  https://w3id.org/ocm/ontology/InstrumentalSong
 :InstrumentalSong rdf:type owl:Class ;
                   rdfs:subClassOf :Song ,
+                                  [ rdf:type owl:Restriction ;
+                                    owl:onProperty :hasLyrics ;
+                                    owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;
+                                    owl:onClass :Lyrics
+                                  ] ,
                                   [ rdf:type owl:Restriction ;
                                     owl:onProperty :involvesMusicalRole ;
                                     owl:qualifiedCardinality "0"^^xsd:nonNegativeInteger ;

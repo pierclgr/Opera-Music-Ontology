@@ -1517,6 +1517,20 @@ for id, row in tqdm(cross_composer.iterrows(), total=len(cross_composer)):
                 Literal(performer_name)
             ))
 
+            # add performer name
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource}{performer_type}/{performer_id}"),
+                RDFS.label,
+                Literal(performer_name)
+            ))
+
+            # add performer name
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource}{performer_type}/{performer_id}"),
+                RDFS.label,
+                Literal(performer_name)
+            ))
+
             # performer executes score
             knowledge_graph.add((
                 URIRef(f"{ocm_resource}{performer_type}/{performer_id}"),

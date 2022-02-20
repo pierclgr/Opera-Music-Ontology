@@ -9,6 +9,7 @@ import re
 from tqdm.auto import tqdm
 from string import punctuation
 from utils import *
+import wget
 
 # define useful prefixes
 PROTOCOL = 'https'
@@ -63,7 +64,6 @@ cross_era = scrape_cross_era()
 print("Done!")
 
 ########## KNOWLEDGE GRAPH CREATION ##########
-
 
 print("########## KNOWLEDGE GRAPH CREATION ##########")
 ontology = Graph().parse(ONTOLOGY_FILE_PATH, format="n3")
@@ -1475,7 +1475,6 @@ for id, row in tqdm(cross_composer.iterrows(), total=len(cross_composer)):
         ))
 
         if performer_id.strip() != "":
-
             # create performer
             knowledge_graph.add((
                 URIRef(f"{ocm_resource}{performer_type}/{performer_id}"),
@@ -1511,7 +1510,30 @@ for id, row in tqdm(cross_composer.iterrows(), total=len(cross_composer)):
                 URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
             ))
 
-######## TO HERE ########
+######## ALIGNMENT ########
+
+print("########## ONTOLOGY ALIGNMENT ##########")
+
+print("Aligning ontologies...")
+alignments = pd.read_csv('../alignment/alignment.txt', sep=' ', keep_default_na=False)
+for id, row in tqdm(alignments.iterrows(), total=len(alignments)):
+    if row.AlignmentProperty == "equivalentClass":
+        ontology.add((
+            URIRef(row.Source),
+            OWL.equivalentClass,
+            URIRef(row.Target)
+        ))
+    else:
+        ontology.add((
+            URIRef(row.Source),
+            RDFS.subClassOf,
+            URIRef(row.Target)
+        ))
+
+########## ENTITY LINKING ##########
+# print("########## ENTITY LINKING ##########")
+#
+# print("Linking entities on DBPedia...")
 
 final_graph = ontology + knowledge_graph
 final_graph.bind("ocm", ocm)

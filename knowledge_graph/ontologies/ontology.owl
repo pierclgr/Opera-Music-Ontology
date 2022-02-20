@@ -6,7 +6,10 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @base <https://w3id.org/ocm/ontology/> .
 
-<https://w3id.org/ocm/ontology/> rdf:type owl:Ontology .
+<https://w3id.org/ocm/ontology/> rdf:type owl:Ontology ;
+                                  rdfs:comment "The Opera and Classical music ontology aims at capturing the semantic relationships and links between classical and opera music, composers, performances of various musical roles and conductors." ;
+                                  rdfs:label "Opera and Classical Music Ontology" ;
+                                  owl:versionInfo 1.0 .
 
 #################################################################
 #    Object Properties

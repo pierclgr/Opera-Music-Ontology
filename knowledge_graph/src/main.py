@@ -1334,6 +1334,34 @@ for id, row in tqdm(cross_composer.iterrows(), total=len(cross_composer)):
         ocm.MusicWriting
     ))
 
+    # create composer
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        RDF.type,
+        ocm.Composer
+    ))
+
+    # add composer name
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        ocm.hasName,
+        Literal(composer_name)
+    ))
+
+    # add composer name
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        RDFS.label,
+        Literal(composer_name)
+    ))
+
+    # add composer to creation
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
+        ocm.involvesAuthor,
+        URIRef(f"{ocm_resource.Composer}/{composer_id}")
+    ))
+
     # music situation labelì
     knowledge_graph.add((
         URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),

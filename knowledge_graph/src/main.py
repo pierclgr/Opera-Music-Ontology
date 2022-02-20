@@ -21,7 +21,7 @@ ONTOLOGY_FILE_PATH = "../ontologies/ontology.owl"
 DATASET_FILE_PATH = "../data/data.zip"
 
 # define useful links
-NATIONALITY_MAP_PATH = "../data/demonyms.txt"
+NATIONALITY_MAP_PATH = "../data/demonyms.csv"
 
 # load nationality map
 nationality_map = pd.read_csv(NATIONALITY_MAP_PATH, sep=',', keep_default_na=False, header=None)
@@ -675,301 +675,36 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
 
 
 
-# # OPERA DATABASE - Art Song
-# # Loading data from opera database operas and zarzuelas
-# # - composer, nationality, lifetime
-# # - aria
-# # - album
-# # - opera language(s)
-# # - song voice(s)
-# # - music sheet, synopsis, wiki, libretto
-# # situations -> music creation
-# operadb_arias_zarias = pd.concat([operadb_arias, operadb_zarzuela_arias])
+# OPERA DATABASE - Art Song
+# Loading data from opera database operas and zarzuelas
+# - composer, nationality, lifetime
+# - aria
+# - album
+# - opera language(s)
+# - song voice(s)
+# - music sheet, synopsis, wiki, libretto
+# situations -> music creation
+print("Mapping Opera Database Art Song...")
 
-# print("Mapping Opera Database Arias and Zarzuela Arias...")
+for id, row in tqdm(operadb_art_songs.iterrows()):
 
-# for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zarias)):
+    composer_name = " ".join(list(reversed(row.Composer.split(", "))))
+    composer_id = composer_name.replace(" ", "_")
 
-#     # extract composers name and surname and id
-#     composers = row.Composer.split("; ")
-#     lifetime = row['Composer lifetime'].split("; ") if row['Composer lifetime'] != "" else None
-#     nationality = row['Composer nationality'].split("; ") if row['Composer nationality'] != "" else None
-#     composer_wiki = row["Composer Wikipedia"].split("; ") if row["Composer Wikipedia"] != "" else None
-#     list_of_composers = {}
-#     i = 0
-#     for composer in composers:
-#         if composer != "":
-#             composer = composer.replace("_", "").split(", ")
-#             if len(composer) > 2:
-#                 name = f"{composer[2]} {composer[0]}"
-#                 surname = composer[1]
-#             else:
-#                 name = composer[1]
-#                 surname = composer[0]
-#             composer = f"{name} {surname}".strip(" ")
-
-#             # extract artistic name if exists
-#             real_name = None
-#             if re.match("\[(.*?)\]", composer):
-#                 artistic_name = re.search("\[(.*?)\]", composer).group(1)
-#                 real_name = re.sub("\[(.*?)\]", "", composer).strip(" ")
-#                 composer = artistic_name
-
-#             composer = composer.replace("[", "").replace("]", "")
-#             composer_id = r.sub('', composer).replace(" ", "_")
-
-#             # extract composer lifetime
-#             born = None
-#             death = None
-#             if lifetime:
-#                 if i < len(lifetime):
-#                     cur_lifetime = lifetime[i]
-#                     if cur_lifetime != "":
-#                         cur_lifetime = cur_lifetime.split("-")
-#                         if len(cur_lifetime) < 2:
-#                             born = cur_lifetime[0].replace("?", "")
-#                         else:
-#                             born = cur_lifetime[0].replace("?", "")
-#                             death = cur_lifetime[1].replace("?", "")
-
-#             # extract composer state
-#             state = None
-#             if nationality:
-#                 if i < len(nationality):
-#                     cur_nationality = nationality[i]
-#                     if cur_nationality != "":
-#                         cur_nationality = cur_nationality.replace("South", "South African")
-#                         cur_nationality = cur_nationality.replace("Korean", "South Korean")
-#                         cur_nationality = cur_nationality.replace("Yugoslavian", "Yugoslav")
-#                         cur_nationality = cur_nationality.replace("New", "New Zealander")
-#                         cur_nationality = cur_nationality.replace("Puerto", "Puerto Rican")
-#                         cur_nationality = cur_nationality.replace("Sierra", "Sierra Leonean")
-#                         state = nationality_map[cur_nationality]
-
-#             # extract composer wiki
-#             cur_composer_wiki = None
-#             if composer_wiki:
-#                 if i < len(composer_wiki):
-#                     cur_composer_wiki = composer_wiki[i]
-#             list_of_composers[composer_id] = [composer, real_name, born, death, state, cur_composer_wiki]
-#         i += 1
-
-
+    # song info
+    song_title = row.Filename
+    song_title = re.sub(r"\s-\sD\d[0-9]*", song_title) # remove the " - D123" thing
+    song_id = song_title.title().replace(" ", "_").replace(".", "")
     
-#     # extract opera title
-#     opera = row.Opera
-#     opera_id = r.sub('_', opera).replace(" ", "_").strip("_").strip(
-#         "'").title() if opera != "" and opera != "?" else None
-
-#     # extract aria title
-#     aria = row.Aria
-#     aria_id = r.sub("_", aria).replace(" ", "_").strip("_").strip(
-#         "'").title() if aria != "" and aria != "?" else None
-
-#     # extract character title
-#     character = None
-#     character_id = None
-#     if row.Character != "":
-#         character = row.Character
-#         character_id = r.sub("", character).replace(" ", "_")
-
-#     # extract voices 
-#     voices = []
-#     if row.Voice != "":
-#         for voice in row.Voice.title().split("/"):
-#             voices.append(voice.strip())
-
-
-#     # --- adding triples --- #
     
-#     if opera_id:
-#         # add opera
-#         knowledge_graph.add((
-#             URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-#             RDF.type,
-#             URIRef(ocm.Opera)
-#         ))
+    # voice(s)
+    voices = row.Voice.strip().split(", ") if voice != "" else []
 
-#         knowledge_graph.add((
-#             URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-#             ocm.hasTitle,
-#             Literal(opera.title())
-#         ))
-
-        
-
-#     if aria_id:
-#         # add Aria
-#         knowledge_graph.add((
-#             URIRef(f"{ocm_resource.Aria}/{aria_id}"),
-#             RDF.type,
-#             URIRef(ocm.Aria)
-#         ))
-
-#         # aria title
-#         knowledge_graph.add((
-#             URIRef(f"{ocm_resource.Aria}/{aria_id}"),
-#             ocm.hasTitle,
-#             Literal(aria.title())
-#         ))
-  
-#         # aria part of opera
-#         if opera_id:
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Aria}/{aria_id}"),
-#                 ocm.includedInCollection,
-#                 URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-#             ))
-
-#         if character_id:
-#             # create character
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Character}/{character_id}"),
-#                 RDF.type,
-#                 URIRef(f"{ocm.Character}")
-#             ))
-
-#             # character name
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Character}/{character_id}"),
-#                 ocm.hasCharacterName,
-#                 Literal(character)
-#             ))
-
-#             # add character to aria
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Character}/{character_id}"),
-#                 ocm.characterOf,
-#                 URIRef(f"{ocm_resource.Aria}/{aria_id}")
-#             ))
-
-#             # add vocal score(s)
-#             for voice in voices:
-
-#                 voice_id = voice.replace(" ", "_").title()
-#                 score_id = f"{voice_id}_score_{aria_id}"
-                
-#                 # create vocal score
-#                 knowledge_graph.add((
-#                     URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
-#                     RDF.type,
-#                     ocm.VocalScore
-#                 ))
-
-#                 # vocal score for voice (instrument)
-#                 knowledge_graph.add((
-#                     URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
-#                     ocm.scoreForInstrument,
-#                     URIRef(f"{ocm_resource.Voice}/{voice_id}")
-#                 ))
-
-#                 # add score to aria
-#                 knowledge_graph.add((
-#                     URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
-#                     ocm.scoreOfSong,
-#                     URIRef(f"{ocm_resource.Aria}/{aria_id}")
-#                 ))
-
+    # album
+    album_title = row.Album.strip("'").strip("_")
+    album_id = album_title.replace(" ", "_").replace(".", "")
     
-#     # add composer to graph
-#     for k, v in list_of_composers.items():
-#         composer_id = k
-#         composer = v[0]
-#         real_name = v[1]
-#         born = v[2]
-#         death = v[3]
-#         state = v[4]
-#         composer_wiki = v[5]
-
-#         # create composer
-#         knowledge_graph.add((
-#             URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#             RDF.type,
-#             URIRef(f"{ocm.Composer}")
-#         ))
-
-#         # composer name
-#         knowledge_graph.add((
-#             URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#             ocm.hasName,
-#             Literal(composer)
-#         ))
-
-#         # composer 2nd name
-#         if real_name:
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#                 ocm.hasName,
-#                 Literal(real_name)
-#             ))
-
-#         # composer birth
-#         if born:
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#                 ocm.hasYearOfBirth,
-#                 Literal(born)
-#             ))
-
-#         # composer death
-#         if death:
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#                 ocm.hasYearOfDeath,
-#                 Literal(death)
-#             ))
-
-#         # composer from
-#         if state:
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#                 ocm.isFrom,
-#                 Literal(state)
-#             ))
-
-#         # composer wiki
-#         if composer_wiki:
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#                 ocm.hasWiki,
-#                 Literal(composer_wiki)
-#             ))
-
-#         if aria_id or opera_id:
-#             music_creation_id = music_creation.new("__".join(list(list_of_composers.keys())))
-
-#             # music creation situation
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-#                 RDF.type,
-#                 ocm.MusicWriting
-#             ))
-
-#             # composer (subclass of author) in music creation
-#             knowledge_graph.add((
-#                 URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-#                 ocm.involvesAuthor,
-#                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#             ))
-            
-#             # add aria to musical creation
-#             if aria_id:
-#                 knowledge_graph.add((
-#                     URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-#                     ocm.creates,
-#                     URIRef(f"{ocm_resource.Aria}/{aria_id}")
-#                 ))
-
-#             # add opera to musical creation
-#             if opera_id:
-#                 knowledge_graph.add((
-#                     URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-#                     ocm.creates,
-#                     URIRef(f"{ocm_resource.Opera}/{opera_id}")
-#                 ))
-
-            
-
+       
 
 ######## TO HERE ########
 

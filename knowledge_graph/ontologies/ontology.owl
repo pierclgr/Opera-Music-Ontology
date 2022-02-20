@@ -23,7 +23,7 @@
 :conducts rdf:type owl:ObjectProperty ;
           owl:inverseOf :involvesConductor ;
           rdfs:domain :Conductor ;
-          rdfs:range :TheatricalPerformance .
+          rdfs:range :MusicalPerformance .
 
 
 ###  https://w3id.org/ocm/ontology/createdIn
@@ -56,7 +56,7 @@
 :exhibitAt rdf:type owl:ObjectProperty ;
            owl:inverseOf :involvesPerformer ;
            rdfs:domain :Performer ;
-           rdfs:range :TheatricalPerformance .
+           rdfs:range :MusicalPerformance .
 
 
 ###  https://w3id.org/ocm/ontology/hasCharacter
@@ -83,7 +83,7 @@
 :hostsPerformance rdf:type owl:ObjectProperty ;
                   owl:inverseOf :involvesLocation ;
                   rdfs:domain :Location ;
-                  rdfs:range :TheatricalPerformance .
+                  rdfs:range :MusicalPerformance .
 
 
 ###  https://w3id.org/ocm/ontology/includedInCollection
@@ -129,19 +129,19 @@
 ###  https://w3id.org/ocm/ontology/involvesComposition
 :involvesComposition rdf:type owl:ObjectProperty ;
                      owl:inverseOf :performedIn ;
-                     rdfs:domain :TheatricalPerformance ;
+                     rdfs:domain :MusicalPerformance ;
                      rdfs:range :MusicalComposition .
 
 
 ###  https://w3id.org/ocm/ontology/involvesConductor
 :involvesConductor rdf:type owl:ObjectProperty ;
-                   rdfs:domain :TheatricalPerformance ;
+                   rdfs:domain :MusicalPerformance ;
                    rdfs:range :Conductor .
 
 
 ###  https://w3id.org/ocm/ontology/involvesLocation
 :involvesLocation rdf:type owl:ObjectProperty ;
-                  rdfs:domain :TheatricalPerformance ;
+                  rdfs:domain :MusicalPerformance ;
                   rdfs:range :Location .
 
 
@@ -153,7 +153,7 @@
 
 ###  https://w3id.org/ocm/ontology/involvesPerformer
 :involvesPerformer rdf:type owl:ObjectProperty ;
-                   rdfs:domain :TheatricalPerformance ;
+                   rdfs:domain :MusicalPerformance ;
                    rdfs:range :Performer .
 
 
@@ -171,7 +171,7 @@
 ###  https://w3id.org/ocm/ontology/performedIn
 :performedIn rdf:type owl:ObjectProperty ;
              rdfs:domain :MusicalComposition ;
-             rdfs:range :TheatricalPerformance .
+             rdfs:range :MusicalPerformance .
 
 
 ###  https://w3id.org/ocm/ontology/playedBy
@@ -295,7 +295,7 @@ rdfs:label rdf:type owl:DatatypeProperty .
 
 ###  https://w3id.org/ocm/ontology/yearOfPerformance
 :yearOfPerformance rdf:type owl:DatatypeProperty ;
-                   rdfs:domain :TheatricalPerformance ;
+                   rdfs:domain :MusicalPerformance ;
                    rdfs:range rdfs:Literal .
 
 
@@ -340,7 +340,7 @@ rdfs:label rdf:type owl:DatatypeProperty .
 
 ###  https://w3id.org/ocm/ontology/AriaPerformance
 :AriaPerformance rdf:type owl:Class ;
-                 rdfs:subClassOf :TheatricalPerformance ,
+                 rdfs:subClassOf :MusicalPerformance ,
                                  [ rdf:type owl:Restriction ;
                                    owl:onProperty :involvesComposition ;
                                    owl:allValuesFrom :Aria
@@ -474,6 +474,10 @@ rdfs:label rdf:type owl:DatatypeProperty .
 :MusicalInstrument rdf:type owl:Class .
 
 
+###  https://w3id.org/ocm/ontology/MusicalPerformance
+:MusicalPerformance rdf:type owl:Class .
+
+
 ###  https://w3id.org/ocm/ontology/MusicalScore
 :MusicalScore rdf:type owl:Class ;
               rdfs:subClassOf :MusicalComposition .
@@ -545,10 +549,6 @@ rdfs:label rdf:type owl:DatatypeProperty .
 ###  https://w3id.org/ocm/ontology/Song
 :Song rdf:type owl:Class ;
       rdfs:subClassOf :MusicalComposition .
-
-
-###  https://w3id.org/ocm/ontology/TheatricalPerformance
-:TheatricalPerformance rdf:type owl:Class .
 
 
 ###  https://w3id.org/ocm/ontology/VocalScore

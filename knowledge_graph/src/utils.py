@@ -16,7 +16,7 @@ musical_instruments = ['Violin', 'Horn', 'Orchestra', 'Guitar', 'Viola', 'Cello'
 vocal_instruments = ['Alto', 'Baritone', 'Bass', 'Choir', 'Choral', 'Mezzo-Soprano', 'Soprano', 'Tenor']
 
 
-def get_instrument_type_and_score(instrum:str):
+def get_instrument_type_and_score(instrum: str):
   if instrum in vocal_instruments:
     instrum_type = "Voice"
   elif instrum in musical_instruments:
@@ -25,6 +25,7 @@ def get_instrument_type_and_score(instrum:str):
     instrum_type = None
 
   # musical score
+  score_type = None
   if instrum_type is not None:
     if instrum_type == "Voice":
       score_type = "VocalScore"

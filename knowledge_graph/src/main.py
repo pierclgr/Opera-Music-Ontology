@@ -28,14 +28,13 @@ nationality_map = pd.read_csv(NATIONALITY_MAP_PATH, sep=',', keep_default_na=Fal
 nationality_map.columns = ['Nationality', 'State']
 nationality_map = dict(zip(nationality_map['Nationality'], nationality_map['State']))
 
+print(type(nationality_map))
+
 # define namespace for ontology entities and properties
 ocm = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_ONTOLOGY}/")
 
 # define namespace for ontology resources
 ocm_resource = Namespace(f"{PROTOCOL}://{DOMAIN}/{FORMAT_TYPE_RESOURCE}/")
-
-
-
 
 ########## DATA PREPARATION ##########
 
@@ -65,7 +64,6 @@ print("Loading Cross-Era dataset...")
 cross_era = scrape_cross_era()
 print("Done!")
 
-
 ########## KNOWLEDGE GRAPH CREATION ##########
 
 
@@ -77,10 +75,6 @@ knowledge_graph = Graph()
 # create situation creators
 performance = SituationCreator(situa_type="performance")
 music_creation = SituationCreator(situa_type="music_creation")
-
-
-
-
 
 # OPERA DATABASE
 # Loading data from opera database operas and zarzuelas
@@ -188,7 +182,6 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
     # ---- add triples ---- #
     # create ids for performance situation and music creation situation
     # something important info about performance are missing: just use an incremental value
-    
 
     # add opera
     if opera_id:
@@ -249,11 +242,11 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
 
         # add libretto of the opera
         if libretto:
-            knowledge_graph.add((
-                URIRef(f"{ocm_resource.Libretto}/{libretto_id}"),
-                RDF.type,
-                ocm.Libretto
-            ))
+            # knowledge_graph.add((
+            #     URIRef(f"{ocm_resource.Libretto}/{libretto_id}"),
+            #     RDF.type,
+            #     ocm.Libretto
+            # ))
 
             # add libretto to the opera
             knowledge_graph.add((
@@ -281,11 +274,11 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
             performance_id = performance.new(keyword="")
 
             # performance situation
-            knowledge_graph.add((
-                URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
-                RDF.type,
-                ocm.MusicalPerformance
-            ))
+            # knowledge_graph.add((
+            #     URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
+            #     RDF.type,
+            #     ocm.MusicalPerformance
+            # ))
 
             # date of premier for the situation 
             knowledge_graph.add((
@@ -301,7 +294,6 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
                 URIRef(f"{ocm_resource.Opera}/{opera_id}"),
             ))
 
-
     # add composer to graph
     for k, v in list_of_composers.items():
         composer_id = k
@@ -313,11 +305,11 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
         composer_wiki = v[5]
 
         # composer id
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-            RDF.type,
-            ocm.Composer
-        ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        #     RDF.type,
+        #     ocm.Composer
+        # ))
 
         # composer name
         knowledge_graph.add((
@@ -373,10 +365,6 @@ for id, row in tqdm(operadb_operas_zarzuela.iterrows(), total=len(operadb_operas
                 ocm.involvedInCreation,
                 URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
             ))
-
-
-        
-
 
 # OPERA DATABASE - Aria e Zarzuela Arias
 # Loading data from opera database operas and zarzuelas
@@ -456,8 +444,6 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
             list_of_composers[composer_id] = [composer, real_name, born, death, state, cur_composer_wiki]
         i += 1
 
-
-    
     # extract opera title
     opera = row.Opera
     opera_id = r.sub('_', opera).replace(" ", "_").strip("_").strip(
@@ -481,16 +467,15 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
         for voice in row.Voice.title().split("/"):
             voices.append(voice.strip())
 
-
     # --- adding triples --- #
-    
+
     if opera_id:
         # add opera
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Opera}/{opera_id}"),
-            RDF.type,
-            URIRef(ocm.Opera)
-        ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Opera}/{opera_id}"),
+        #     RDF.type,
+        #     URIRef(ocm.Opera)
+        # ))
 
         knowledge_graph.add((
             URIRef(f"{ocm_resource.Opera}/{opera_id}"),
@@ -498,15 +483,13 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
             Literal(opera.title())
         ))
 
-        
-
     if aria_id:
         # add Aria
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Aria}/{aria_id}"),
-            RDF.type,
-            URIRef(ocm.Aria)
-        ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Aria}/{aria_id}"),
+        #     RDF.type,
+        #     URIRef(ocm.Aria)
+        # ))
 
         # aria title
         knowledge_graph.add((
@@ -514,7 +497,7 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
             ocm.hasTitle,
             Literal(aria.title())
         ))
-  
+
         # aria part of opera
         if opera_id:
             knowledge_graph.add((
@@ -525,11 +508,11 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
 
         if character_id:
             # create character
-            knowledge_graph.add((
-                URIRef(f"{ocm_resource.Character}/{character_id}"),
-                RDF.type,
-                URIRef(f"{ocm.Character}")
-            ))
+            # knowledge_graph.add((
+            #     URIRef(f"{ocm_resource.Character}/{character_id}"),
+            #     RDF.type,
+            #     URIRef(f"{ocm.Character}")
+            # ))
 
             # character name
             knowledge_graph.add((
@@ -547,16 +530,15 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
 
             # add vocal score(s)
             for voice in voices:
-
                 voice_id = voice.replace(" ", "_").title()
                 score_id = f"{voice_id}_score_{aria_id}"
-                
+
                 # create vocal score
-                knowledge_graph.add((
-                    URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
-                    RDF.type,
-                    ocm.VocalScore
-                ))
+                # knowledge_graph.add((
+                #     URIRef(f"{ocm_resource.VocalScore}/{score_id}"),
+                #     RDF.type,
+                #     ocm.VocalScore
+                # ))
 
                 # vocal score for voice (instrument)
                 knowledge_graph.add((
@@ -572,7 +554,6 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
                     URIRef(f"{ocm_resource.Aria}/{aria_id}")
                 ))
 
-    
     # add composer to graph
     for k, v in list_of_composers.items():
         composer_id = k
@@ -584,11 +565,11 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
         composer_wiki = v[5]
 
         # create composer
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-            RDF.type,
-            ocm.Composer
-        ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        #     RDF.type,
+        #     ocm.Composer
+        # ))
 
         # composer name
         knowledge_graph.add((
@@ -641,11 +622,11 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
             music_creation_id = music_creation.new("__".join(list(list_of_composers.keys())))
 
             # music creation situation
-            knowledge_graph.add((
-                URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-                RDF.type,
-                ocm.MusicWriting
-            ))
+            # knowledge_graph.add((
+            #     URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
+            #     RDF.type,
+            #     ocm.MusicWriting
+            # ))
 
             # composer (subclass of author) in music creation
             knowledge_graph.add((
@@ -653,7 +634,7 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
                 ocm.involvesAuthor,
                 URIRef(f"{ocm_resource.Composer}/{composer_id}"),
             ))
-            
+
             # add aria to musical creation
             if aria_id:
                 knowledge_graph.add((
@@ -670,9 +651,6 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
                     URIRef(f"{ocm_resource.Opera}/{opera_id}")
                 ))
 
-
-
-
 # OPERA DATABASE - Art Song
 # Loading data from opera database operas and zarzuelas
 # - composer, nationality, lifetime
@@ -684,27 +662,27 @@ for id, row in tqdm(operadb_arias_zarias.iterrows(), total=len(operadb_arias_zar
 # situations -> music creation
 print("Mapping Opera Database Art Song...")
 
-for id, row in tqdm(operadb_art_songs.iterrows()):
+for id, row in tqdm(operadb_art_songs.iterrows(), total=len(operadb_art_songs)):
 
     composer_name = " ".join(list(reversed(row.Composer.split(", "))))
     composer_id = composer_name.replace(" ", "_")
     composer_bdate = row["Composer lifetime"].replace(" ", "").split("-")[0]
     composer_ddate = row["Composer lifetime"].replace(" ", "").split("-")[1]
-    composer_nationality = row["Composer nationality"].replace(" ", "").split(";")
-    composer_from = nationality_map[composer_nationality].strip()
+    composer_nationality = row["Composer nationality"].replace(" ", "")
+    composer_from = nationality_map[composer_nationality].strip(" ")
     composer_wiki = row["Composer Wikipedia"]
 
     # song info
-    song_title = row.Filename
-    song_title = re.sub(r"\s-\sD\d[0-9]*", song_title) # remove the " - D123" thing
-    song_id = song_title.title().replace(" ", "_").replace(".", "")
-    
+    song_title = row.Song
+    song_title = re.sub(r"\s-\sD\d[0-9]*", "", song_title)  # remove the " - D123" thing
+    song_id = r.sub("_", song_title.title().replace(" ", "_").replace(".", ""))
+
     # album
-    album_title = row.Album.strip("'").strip("_") if row.Album is not "" else None
-    album_id = album_title.replace(" ", "_").replace(".", "")
+    album_title = row.Album.strip("'").strip("_") if row.Album != "" else None
+    album_id = r.sub("_", album_title.replace(" ", "_").replace(".", "")) if album_title is not None else None
 
     # voices
-    voices = row.Voice.strip().split(", ") if voice != "" else []
+    voices = row.Voice.strip().split(", ") if row.Voice != "" else []
 
     # sheets
     sheets = []
@@ -714,16 +692,15 @@ for id, row in tqdm(operadb_art_songs.iterrows()):
     # languages
     languages = [lang.strip() for lang in row.Language.strip().split(", ")]
 
-
     # --- adding triples --- #
     music_creation_id = music_creation.new(composer_id)
 
     # music creation situation
-    knowledge_graph.add((
-        URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
-        RDF.type,
-        ocm.MusicWriting
-    ))
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
+    #     RDF.type,
+    #     ocm.MusicWriting
+    # ))
 
     # add song to music writing 
     knowledge_graph.add((
@@ -733,11 +710,11 @@ for id, row in tqdm(operadb_art_songs.iterrows()):
     ))
 
     # create composer 
-    knowledge_graph.add((
-        URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-        RDF.type,
-        ocm.Composer
-    ))
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+    #     RDF.type,
+    #     ocm.Composer
+    # ))
 
     # composer name
     knowledge_graph.add((
@@ -781,16 +758,14 @@ for id, row in tqdm(operadb_art_songs.iterrows()):
         URIRef(f"{ocm_resource.Composer}/{composer_id}"),
     ))
 
-
     for voice, sheet in zip(voices, sheets):
-    
+
         # create voice score
-        voice_score_id = f"{voice}_sore_{song_id}"
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.VocalScore}/{voice_score_id}"),
-            RDF.type,
-            ocm.VocalScore
-        ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.VocalScore}/{voice_score_id}"),
+        #     RDF.type,
+        #     ocm.VocalScore
+        # ))
 
         # music sheet for vocal score
         voice_score_id = f"{voice}_sore_{song_id}"
@@ -801,7 +776,6 @@ for id, row in tqdm(operadb_art_songs.iterrows()):
         ))
 
         # vocal score for song
-        voice_score_id = f"{voice}_sore_{song_id}"
         knowledge_graph.add((
             URIRef(f"{ocm_resource.VocalScore}/{voice_score_id}"),
             ocm.scoreOfSong,
@@ -809,11 +783,11 @@ for id, row in tqdm(operadb_art_songs.iterrows()):
         ))
 
         # create voice as instrument
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Voice}/{voice}"),
-            RDF.type,
-            ocm.Voice
-        ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Voice}/{voice}"),
+        #     RDF.type,
+        #     ocm.Voice
+        # ))
 
         # vocal score for voice
         knowledge_graph.add((
@@ -824,20 +798,19 @@ for id, row in tqdm(operadb_art_songs.iterrows()):
 
         # create lyric
         lyric_id = f"{song_id}__lyrics"
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Lyric}/{lyric_id}"),
-            RDF.type,
-            URIRef(ocm.Lyrics)
-        ))
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Lyric}/{lyric_id}"),
+        #     RDF.type,
+        #     URIRef(ocm.Lyrics)
+        # ))
 
         # add lyrics to song
-        lyric_id = f"{song_id}__lyrics"
         knowledge_graph.add((
             URIRef(f"{ocm_resource.Song}/{song_id}"),
             ocm.hasLyrics,
             URIRef(f"{ocm_resource.Lyric}/{lyric_id}")
         ))
-            
+
         for language in languages:
             # add language(s) of lyrics
             knowledge_graph.add((
@@ -845,17 +818,15 @@ for id, row in tqdm(operadb_art_songs.iterrows()):
                 ocm.hasLanguage,
                 Literal(language)
             ))
-        
-
 
     if album_id:
         # create album id 
-        knowledge_graph.add((
-            URIRef(f"{ocm_resource.Album}/{album_id}"),
-            RDF.type,
-            ocm.Album
-        ))
-        
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Album}/{album_id}"),
+        #     RDF.type,
+        #     ocm.Album
+        # ))
+
         # add album to music writing 
         knowledge_graph.add((
             URIRef(f"{ocm_resource.MusicWriting}/{music_creation_id}"),
@@ -870,356 +841,342 @@ for id, row in tqdm(operadb_art_songs.iterrows()):
             URIRef(f"{ocm_resource.Song}/{song_id}"),
         ))
 
+        # add title to album
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.Album}/{album_id}"),
+            ocm.hasTitle,
+            Literal(album_title)
+        ))
 
+print("Mapping Cross Era...")
+for id, row in tqdm(cross_era.iterrows(), total=len(cross_era)):
 
+    # composer info
+    composer_name = " ".join(list(reversed(row.Composer.split("; "))))
+    composer_id = composer_name.replace(" ", "_").replace(".", "")
+    composer_bdate = row.CompLifetime.replace(" ", "").split("-")[0]
+    composer_ddate = row.CompLifetime.replace(" ", "").split("-")[1]
+    composer_from = row.Country.replace(" ", "").split(";")
 
+    # song info
+    song_id = row.Filename.lower().replace(" ", "_").replace(".", "")
+    song_title = row.Filename
+    song_mode = row.Mode.lower() if type(row.Mode) == str else None
+    song_key = row.Key if type(row.Key) == str else None
 
+    # instrumentation
+    instrum = row.Instrumentation.replace(".", "")
+    instrum_type, score_type = get_instrument_type_and_score(instrum)
+    score_id = f"{instrum}_score_{song_id}"
 
-# for id, row in cross_era.iterrows():
+    # ----- creating individuals ----- #
 
-#   # composer info
-#   composer_name = " ".join(list(reversed(row.Composer.split("; "))))
-#   composer_id = composer_name.replace(" ", "_").replace(".", "")
-#   composer_bdate = row.CompLifetime.replace(" ", "").split("-")[0]
-#   composer_ddate = row.CompLifetime.replace(" ", "").split("-")[1]
-#   composer_from = row.Country.replace(" ", "").split(";")
+    # situation
+    music_creation_id = music_creation.new(composer_id)
 
-#   # song info
-#   song_id = row.Filename.lower().replace(" ", "_").replace(".", "")
-#   song_title = row.Filename
-#   song_mode = row.Mode.lower() if type(row.Mode) == str else None
-#   song_key = row.Key if type(row.Key) == str else None
-  
-#   # instrumentation
-#   instrum = row.Instrumentation.replace(".", "")
-#   instrum_type, score_type = get_instrument_type_and_score(instrum)
-#   score_id = f"{instrum}_score_{song_id}"
-  
-      
+    # composer type
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+    #     RDF.type,
+    #     ocm.Composer
+    # ))
 
-#   # ----- creating individuals ----- #
+    # composer name
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        ocm.hasName,
+        Literal(composer_name)
+    ))
 
-#   # situation
-#   music_creation_id = music_creation.new(composer_id)
+    # composer birth
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        ocm.hasYearOfBirth,
+        Literal(composer_bdate)
+    ))
 
-#   # composer type
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#       RDF.type, 
-#       ocm.Composer
-#   ))
+    # composer death
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+        ocm.hasYearOfDeath,
+        Literal(composer_ddate)
+    ))
 
-#   # composer name
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#       ocm.hasName,
-#       Literal(composer_name)
-#   ))
+    # composer is from
+    for place in composer_from:
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.Composer}/{composer_id}"),
+            ocm.isFrom,
+            Literal(place)
+        ))
 
-#   # composer birth
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#       ocm.hasYearOfBirth,
-#       Literal(composer_bdate)
-#   ))
+    # musical creation - create the situation
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
+    #     RDF.type,
+    #     ocm.MusicWriting
+    # ))
 
-#   # composer death
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#       ocm.hasYearOfDeath,
-#       Literal(composer_ddate)
-#   ))
+    # musical creation - involves author
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
+        ocm.involvesAuthor,
+        URIRef(f"{ocm_resource.Composer}/{composer_id}")
+    ))
 
-#   # composer is from
-#   for place in composer_from:
-#     knowledge_graph.add((
-#         URIRef(f"{ocm_resource.Composer}/{composer_id}"),
-#         ocm.isFrom,
-#         Literal(place)
-#     ))
+    # song id
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.Song}/{song_id}"),
+    #     RDF.type,
+    #     ocm.Song
+    # ))
 
-#   # musical creation - create the situation
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
-#       RDF.type,
-#       ocm.MusicWriting
-#   ))
+    # song title
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Song}/{song_id}"),
+        ocm.hasTitle,
+        Literal(song_title)
+    ))
 
-#   # musical creation - involves author
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
-#       ocm.involvesAuthor,
-#       URIRef(f"{ocm_resource.Composer}/{composer_id}")
-#   ))
+    if song_mode is not None:
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.Song}/{song_id}"),
+            ocm.hasMode,
+            Literal(song_mode)
+        ))
 
+    if song_key is not None:
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.Song}/{song_id}"),
+            ocm.hasKey,
+            Literal(song_key)
+        ))
 
-#   # song id
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       RDF.type,
-#       ocm.Song
-#   ))
+    # song in music creation situation
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
+        ocm.creates,
+        URIRef(f"{ocm_resource.Song}/{song_id}"),
+    ))
 
-#   # song title
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       ocm.hasTitle,
-#       Literal(song_title)
-#   ))
+    # create score for instrument
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource}{score_type}/{score_id}"),
+        ocm.scoreOfSong,
+        URIRef(f"{ocm_resource.Song}/{song_id}"),
+    ))
 
-#   if song_mode is not None:
-#     knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       ocm.hasMode,
-#       Literal(song_mode)
-#     ))
-  
-#   if song_key is not None:
-#     knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       ocm.hasKey,
-#       Literal(song_key)
-#     ))
+    # create instrument
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource}{instrum_type}/{instrum}"),
+    #     RDF.type,
+    #     URIRef(f"{ocm}{instrum_type}"),
+    # ))
 
-#   # song in music creation situation
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
-#     ocm.creates,
-#     URIRef(f"{ocm_resource.Song}/{song_id}"),
-#   ))
+    # add instrument to score
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource}{score_type}/{score_id}"),
+        ocm.scoreForInstrument,
+        URIRef(f"{ocm_resource}{instrum_type}/{instrum}"),
+    ))
 
-#   # create score for instrument
-#   knowledge_graph.add((
-#     URIRef(f"{ocm_resource}{score_type}/{score_id}"),
-#     ocm.scoreOfSong,
-#     URIRef(f"{ocm_resource.Song}/{song_id}"),
-#   ))
+print("Mapping Cross Era...")
+for id, row in tqdm(cross_composer.iterrows(), total=len(cross_composer)):
 
-#   # create instrument
-#   knowledge_graph.add((
-#     URIRef(f"{ocm_resource}{instrum_type}/{instrum}"),
-#     RDF.type,
-#     URIRef(f"{ocm}{instrum_type}"),
-#   ))
+    # TODO usarne solo una per tutti i dataset
+    performance_id = performance.new(
+        keyword="")  # something important info about performance are missing: just use an incremental value
 
-#   # add instrument to score
-#   knowledge_graph.add((
-#     URIRef(f"{ocm_resource}{score_type}/{score_id}"),
-#     ocm.scoreForInstrument,
-#     URIRef(f"{ocm_resource}{instrum_type}/{instrum}"),
-#   ))
+    composer_name = " ".join(list(reversed(row.Composer.split("; "))))
+    composer_id = composer_name.replace(" ", "_")
 
+    music_creation_id = music_creation.new(composer_id)
 
+    # song info
+    song_title = row.Filename
+    song_id = song_title.title().replace(" ", "_").replace(".", "")
 
+    # conductor(s)
+    conductor_names = []
+    conductor_ids = []
+    if row.Conductor != "" and row.Conductor.strip() != "":
+        for conductor in row.Conductor.split("; "):
+            conductor_name = " ".join(list(reversed(conductor.split(", "))))
+            conductor_id = conductor_name.replace(" ", "_")
+            conductor_names.append(conductor_name)
+            conductor_ids.append(conductor_id)
 
-# for id, row in cross_comp.iterrows():
+    # performer(s)
+    performer_names = []
+    performer_ids = []
+    if row.Performer.strip() != "":
+        for performer in row.Performer.split("; "):
+            performer_name = " ".join(list(performer.split(", ")))
+            performer_id = performer_name.replace(" ", "_")
+            performer_names.append(performer_name)
+            performer_ids.append(performer_id)
 
-#   # TODO usarne solo una per tutti i dataset
-#   performance_id = performance.new(keyword="") # something important info about performance are missing: just use an incremental value
-#   music_creation_id = music_creation.new(composer_id)
+    # instrument(s)
+    instruments = []
+    if row.Instrumentation.strip() != "":
+        for instrument in row.Instrumentation.split("; "):
+            instruments.append(instrument)
 
-#   composer_name = " ".join(list(reversed(row.Composer.split("; "))))
-#   composer_id = composer_name.replace(" ", "_")
+    # album
+    album_title = row.Album.strip("'").strip("_")
+    album_id = album_title.replace(" ", "_").replace(".", "")
 
-  
-#   # song info
-#   song_title = row.Filename
-#   song_id = song_title.title().replace(" ", "_").replace(".", "")
-  
+    #########
 
-#   # conductor(s)
-#   conductor_names = []
-#   conductor_ids = []
-#   if not isna(row.Conductor) and row.Conductor.strip() != "":
-#     for conductor in row.Conductor.split("; "):
-#       conductor_name = " ".join(list(reversed(conductor.split(", "))))
-#       conductor_id = conductor_name.replace(" ", "_")
-#       conductor_names.append(conductor_name)
-#       conductor_ids.append(conductor_id)
+    # create song - ?
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.Song}/{song_id}"),
+    #     RDF.type,
+    #     ocm.Song
+    # ))
+    # song title
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Song}/{song_id}"),
+        ocm.hasTitle,
+        Literal(song_title)
+    ))
 
-#   # performer(s)
-#   performer_names = []
-#   performer_ids = []
-#   if row.Performer.strip() != "":
-#     for performer in row.Performer.split("; "):
-#       performer_name = " ".join(list(performer.split(", ")))
-#       performer_id = performer_name.replace(" ", "_")
-#       performer_names.append(performer_name)
-#       performer_ids.append(performer_id)
+    # create album - ?
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.Album}/{album_id}"),
+    #     RDF.type,
+    #     ocm.Album
+    # ))
+    # album title
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Album}/{album_id}"),
+        ocm.hasTitle,
+        Literal(album_title)
+    ))
 
-#   # instrument(s)
-#   instruments = []
-#   if row.Instrumentation.strip() != "":
-#     for instrument in row.Instrumentation.split("; "):
-#       instruments.append(instrument)
+    # musical creation situation
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
+    #     RDF.type,
+    #     ocm.MusicalCreation
+    # ))
+    # add album to music creation
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Album}/{album_id}"),
+        ocm.createdIn,
+        URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
+    ))
+    # add song to album
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Song}/{song_id}"),
+        ocm.includedInCollection,
+        URIRef(f"{ocm_resource.Album}/{album_id}"),
+    ))
+    # add song to music creation
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Song}/{song_id}"),
+        ocm.createdIn,
+        URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
+    ))
 
+    # performance situation
+    # knowledge_graph.add((
+    #     URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
+    #     RDF.type,
+    #     ocm.MusicalPerformance
+    # ))
 
+    # conductor type -- inferred?
+    for conductor_id, conductor_name in zip(conductor_ids, conductor_names):
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource.Conductor}/{conductor_id}"),
+        #     RDF.type,
+        #     ocm.Conductor
+        # ))
+        # conductor name
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.Conductor}/{conductor_id}"),
+            ocm.hasName,
+            Literal(conductor_name)
+        ))
+        # add conductor to performance
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource.Conductor}/{conductor_id}"),
+            ocm.conducts,
+            URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
+        ))
 
-#   # album
-#   album_title = row.Album.strip("'").strip("_")
-#   album_id = album_title.replace(" ", "_").replace(".", "")
-  
+    # add song to performance -- inferred?
+    knowledge_graph.add((
+        URIRef(f"{ocm_resource.Song}/{song_id}"),
+        ocm.performedIn,
+        URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
+    ))
 
+    for performer_name, performer_id, instrum in zip(performer_names,
+                                                     performer_ids,
+                                                     instruments):
 
-#   #########
+        instrum_type, score_type = get_instrument_type_and_score(instrum)
 
+        # score type
+        score_id = f"{instrum}_score_{song_id}"
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource}{score_type}/{score_id}"),
+        #     RDF.type,
+        #     URIRef(f"{ocm}{score_type}")
+        # ))
 
-#   # create song - ?
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       RDF.type,
-#       ocm.Song
-#   ))
-#   # song title
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       ocm.hasTitle,
-#       Literal(song_title)
-#   ))
+        # create instrument
+        # knowledge_graph.add((
+        #     URIRef(f"{ocm_resource}{instrum_type}/{instrum}"),
+        #     RDF.type,
+        #     URIRef(f"{ocm}{instrum_type}"),
+        # ))
+        # add instrument to score
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource}{score_type}/{score_id}"),
+            ocm.scoreForInstrument,
+            URIRef(f"{ocm_resource}{instrum_type}/{instrum}")
+        ))
+        # score for song
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource}{score_type}/{score_id}"),
+            ocm.scoreOfSong,
+            URIRef(f"{ocm_resource.Song}/{song_id}")
+        ))
+        # score for musical creation
+        knowledge_graph.add((
+            URIRef(f"{ocm_resource}{score_type}/{score_id}"),
+            ocm.createdIn,
+            URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
+        ))
 
-#   # create album - ?
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Album}/{album_id}"),
-#       RDF.type,
-#       ocm.Album
-#   ))
-#   # album title
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Album}/{album_id}"),
-#       ocm.hasTitle,
-#       Literal(album_title)
-#   ))
-
-#   # musical creation situation
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
-#       RDF.type,
-#       ocm.MusicalCreation
-#   ))
-#   # add album to music creation
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Album}/{album_id}"),
-#       ocm.createdIn,
-#       URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
-#   ))
-#   # add song to album
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       ocm.includedInCollection,
-#       URIRef(f"{ocm_resource.Album}/{album_id}"),
-#   ))
-#   # add song to music creation 
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       ocm.createdIn,
-#       URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
-#   ))
-
-
-#   # performance situation
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
-#       RDF.type,
-#       ocm.MusicalPerformance
-#   ))
-
-#   # conductor type -- inferred?
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Conductor}/{conductor_id}"),
-#       RDF.type, 
-#       ocm.Conductor
-#   ))
-#   # conductor name
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Conductor}/{conductor_id}"),
-#       ocm.hasName,
-#       Literal(conductor_name)
-#   ))
-#   # add conductor to performance
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Conductor}/{conductor_id}"),
-#       ocm.conducts,
-#       URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
-#   ))
-
-#   # add song to performance -- inferred?
-#   knowledge_graph.add((
-#       URIRef(f"{ocm_resource.Song}/{song_id}"),
-#       ocm.performedIn,
-#       URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
-#   ))
-
-#   for performer_name, performer_id, instrum in zip(performer_names, 
-#                                                   performer_ids, 
-#                                                   instruments):
-    
-
-#     instrum_type, score_type = get_instrument_type_and_score(instrum)
-    
-#     # score type
-#     score_id = f"{instrum}_score_{song_id}"   
-#     knowledge_graph.add((
-#         URIRef(f"{ocm_resource}{score_type}/{score_id}"),
-#         RDF.type,
-#         URIRef(f"{ocm}{score_type}")
-#     ))
-    
-#     # create instrument
-#     knowledge_graph.add((
-#       URIRef(f"{ocm_resource}{instrum_type}/{instrum}"),
-#       RDF.type,
-#       URIRef(f"{ocm}{instrum_type}"),
-#     ))
-#     # add instrument to score
-#     knowledge_graph.add((
-#       URIRef(f"{ocm_resource}{score_type}/{score_id}"),
-#       ocm.scoreForInstrument,
-#       URIRef(f"{ocm_resource}{instrum_type}/{instrum}")
-#     ))
-#     # score for song
-#     knowledge_graph.add((
-#       URIRef(f"{ocm_resource}{score_type}/{score_id}"),
-#       ocm.scoreOfSong,
-#       URIRef(f"{ocm_resource.Song}/{song_id}")
-#     ))
-#     # score for musical creation
-#     knowledge_graph.add((
-#       URIRef(f"{ocm_resource}{score_type}/{score_id}"),
-#       ocm.createdIn,
-#       URIRef(f"{ocm_resource.MusicalCreation}/{music_creation_id}"),
-#     ))
-
-#     if performer_id.strip() != "":
-#       # create performer
-#       knowledge_graph.add((
-#           URIRef(f"{ocm_resource.Perfomer}/{performer_id}"),
-#           ocm.hasName,
-#           Literal(performer_name)
-#       ))
-#       # performer executes score
-#       knowledge_graph.add((
-#           URIRef(f"{ocm_resource.Perfomer}/{performer_id}"),
-#           ocm.executes,
-#           URIRef(f"{ocm_resource}{score_type}/{score_id}")
-#       ))
-#       # performer plays score
-#       knowledge_graph.add((
-#           URIRef(f"{ocm_resource.Perfomer}/{performer_id}"),
-#           ocm.plays,
-#       URIRef(f"{ocm}{instrum_type}/{instrum}")
-#       ))
-#       # performance involve performer
-#       knowledge_graph.add((
-#           URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
-#           ocm.involvesPerformer,
-#           URIRef(f"{ocm_resource.Perfomer}/{performer_id}"),
-#       ))
-
-
-
-
-
-
+        if performer_id.strip() != "":
+            # create performer
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.Perfomer}/{performer_id}"),
+                ocm.hasName,
+                Literal(performer_name)
+            ))
+            # performer executes score
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.Perfomer}/{performer_id}"),
+                ocm.executes,
+                URIRef(f"{ocm_resource}{score_type}/{score_id}")
+            ))
+            # performer plays score
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.Perfomer}/{performer_id}"),
+                ocm.plays,
+                URIRef(f"{ocm}{instrum_type}/{instrum}")
+            ))
+            # performance involve performer
+            knowledge_graph.add((
+                URIRef(f"{ocm_resource.MusicalPerformance}/{performance_id}"),
+                ocm.involvesPerformer,
+                URIRef(f"{ocm_resource.Perfomer}/{performer_id}"),
+            ))
 
 ######## TO HERE ########
 

@@ -6,7 +6,7 @@ ArCo https://w3id.org/ocm/ontology/Lyrics subClassOf https://w3id.org/arco/ontol
 MuziekSchatten https://w3id.org/ocm/ontology/Author subClassOf https://data.muziekschatten.nl/som/bewerker
 MuziekSchatten https://w3id.org/ocm/ontology/MusicalScore equivalentClass https://data.muziekschatten.nl/som/Partij
 MuziekSchatten https://w3id.org/ocm/ontology/Conductor subClassOf https://data.muziekschatten.nl/som/Directie
-MuziekSchatten https://w3id.org/ocm/ontology/Album equivalentClass https://w3id.org/ocm/ontology/Album
+MuziekSchatten https://w3id.org/ocm/ontology/Album equivalentClass https://data.muziekschatten.nl/som/Album
 MuziekSchatten https://w3id.org/ocm/ontology/Lyrics subClassOf https://data.muziekschatten.nl/som/Handgeschreven
 MuziekSchatten https://w3id.org/ocm/ontology/VocalScore equivalentClass https://data.muziekschatten.nl/som/Zangpartij
 MuziekSchatten https://w3id.org/ocm/ontology/Composer equivalentClass https://data.muziekschatten.nl/som/samensteller

@@ -57,8 +57,3 @@ services:
     depends_on:
       - "knowledge_graph"
     command: ["catalina.sh", "run"]
-
-  lodlive:
-    build: ./lodlive
-    ports:
-      - "80:80"

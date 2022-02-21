@@ -13,3 +13,6 @@ __pycache__
 # ignore fuseki server
 jena-fuseki/
 run/
+
+# Word
+*.docx

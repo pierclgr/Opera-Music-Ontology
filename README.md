@@ -4,7 +4,7 @@ An ontology for opera musical heritage and musicological research.
 This projects provides the following facilities for enhancing user experience: 
  - Virtuoso as SPARQL enpoint;
  - LODE for visualising ontologies as HTML;
- - LodLive and WebVOWL for visualising ontologies with the Visual Notation for OWL Ontologies (VOWL);
+ - WebVOWL for visualising ontologies with the Visual Notation for OWL Ontologies (VOWL);
  - LodView for browsing ontology entities as well as controlled vocabularies entities.
 
 
@@ -24,7 +24,6 @@ Once the containers are up and assuming that `localhost` is the reference host, 
  - LodView at http://localhost:8080/lodview
  - LODE at http://localhost:9090/lode
  - WebVOWL at http://localhost:8888/webvowl
- - LodLive at http://localhost/app_en.html
 
 <!-- #### Quick Examples:
 Here are some quick links to show how information about the element

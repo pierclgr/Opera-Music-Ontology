@@ -206,8 +206,8 @@
                                                               rdfs:range rdfs:Literal .
 
 
-###  https://w3id.org/ocm/ontology/happenedInyear
-:happenedInyear rdf:type owl:DatatypeProperty ;
+###  https://w3id.org/ocm/ontology/happenedInYear
+:happenedInYear rdf:type owl:DatatypeProperty ;
                 rdfs:domain :MusicalCreation ;
                 rdfs:range rdfs:Literal .
 

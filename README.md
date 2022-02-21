@@ -25,10 +25,10 @@ Once the containers are up and assuming that `localhost` is the reference host, 
  - LODE at http://localhost:9090/lode
  - WebVOWL at http://localhost:8888/webvowl
 
-<!-- #### Quick Examples:
+#### Quick Examples:
 Here are some quick links to show how information about the element
-"https://w3id.org/stlab/ke/lifo/onto/Indicator" can be visualized using the browser:
+"https://w3id.org/ocm/ontology/Composer" can be visualized using the browser:
 
- - Virtuoso: http://localhost:8890/sparql?query=select?p?o{%3Chttps://w3id.org/stlab/ke/lifo/onto/Indicator%3E?p?o}
- - LodView:  http://localhost:8080/lodview/onto/Indicator
- - Lode: http://localhost:9090/lode/extract?url=https://w3id.org/stlab/ke/lifo/onto/Indicator -->
+ - Virtuoso: http://localhost:8890/sparql?query=select?p?o{%3Chttps://w3id.org/ocm/ontology/Composer%3E?p?o}
+ - LodView:  http://localhost:8080/lodview/ontology/Composer
+ - Lode: http://localhost:9090/lode/extract?url=https://w3id.org/ocm/ontology/Composer

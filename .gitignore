@@ -14,5 +14,6 @@ __pycache__
 jena-fuseki/
 run/
 
-# Word
+# Office
 *.docx
+*.pptx

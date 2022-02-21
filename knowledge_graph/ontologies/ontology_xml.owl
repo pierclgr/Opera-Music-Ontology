@@ -445,6 +445,8 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="https://w3id.org/ocm/ontology/Opera"/>
+        <rdfs:comment>A musical collection that contains songs but not arias.</rdfs:comment>
+        <rdfs:label>Album</rdfs:label>
     </owl:Class>
     
 
@@ -473,6 +475,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="https://w3id.org/ocm/ontology/InstrumentalSong"/>
+        <rdfs:comment>A piece for one voice performed by one of the characters of an Opera, with or without instrumental or orchestral accompaniment.</rdfs:comment>
         <rdfs:label>Aria</rdfs:label>
     </owl:Class>
     
@@ -488,6 +491,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Aria"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A musical performance in which a specific Aria of an Opera is performed.</rdfs:comment>
         <rdfs:label>AriaPerformance</rdfs:label>
     </owl:Class>
     
@@ -497,6 +501,7 @@
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Author">
         <rdfs:subClassOf rdf:resource="https://w3id.org/ocm/ontology/Person"/>
+        <rdfs:comment>A human being which takes part in the creation of a musical composition.</rdfs:comment>
         <rdfs:label>Author</rdfs:label>
     </owl:Class>
     
@@ -505,6 +510,7 @@
     <!-- https://w3id.org/ocm/ontology/Character -->
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Character">
+        <rdfs:comment>Fictional character, protagonist of an Aria.</rdfs:comment>
         <rdfs:label>Character</rdfs:label>
     </owl:Class>
     
@@ -514,6 +520,7 @@
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Collection">
         <rdfs:subClassOf rdf:resource="https://w3id.org/ocm/ontology/MusicalComposition"/>
+        <rdfs:comment>Musical collection that contains various songs.</rdfs:comment>
         <rdfs:label>Collection</rdfs:label>
     </owl:Class>
     
@@ -529,6 +536,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/MusicWriting"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A human being which takes part in the creation of the music for a musical composition.</rdfs:comment>
         <rdfs:label>Composer</rdfs:label>
     </owl:Class>
     
@@ -538,6 +546,7 @@
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Conductor">
         <rdfs:subClassOf rdf:resource="https://w3id.org/ocm/ontology/Person"/>
+        <rdfs:comment>A person which conducts the execution of all the instruments involved in a musical performance.</rdfs:comment>
         <rdfs:label>Conductor</rdfs:label>
     </owl:Class>
     
@@ -567,6 +576,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="https://w3id.org/ocm/ontology/VocalScore"/>
+        <rdfs:comment>A musical score defined for musical instruments.</rdfs:comment>
         <rdfs:label>InstrumentalScore</rdfs:label>
     </owl:Class>
     
@@ -583,6 +593,7 @@
                 <owl:onClass rdf:resource="https://w3id.org/ocm/ontology/Lyrics"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A song without any singing scores.</rdfs:comment>
         <rdfs:label>InstrumentalSong</rdfs:label>
     </owl:Class>
     
@@ -598,6 +609,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Opera"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>The transcription of the whole text of an Opera.</rdfs:comment>
         <rdfs:label>Libretto</rdfs:label>
     </owl:Class>
     
@@ -606,6 +618,7 @@
     <!-- https://w3id.org/ocm/ontology/Location -->
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Location">
+        <rdfs:comment>Physical place where a Musical Performance took place.</rdfs:comment>
         <rdfs:label>Location</rdfs:label>
     </owl:Class>
     
@@ -621,6 +634,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Writer"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>The act of creating lyrics for a musical composition.</rdfs:comment>
         <rdfs:label>LyricWriting</rdfs:label>
     </owl:Class>
     
@@ -643,6 +657,7 @@
                 <owl:onClass rdf:resource="https://w3id.org/ocm/ontology/InstrumentalSong"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>The text associated with a Musical Composition.</rdfs:comment>
         <rdfs:label>Lyrics</rdfs:label>
     </owl:Class>
     
@@ -658,6 +673,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Composer"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>The act of creating musical scores for a musical composition.</rdfs:comment>
         <rdfs:label>MusicWriting</rdfs:label>
     </owl:Class>
     
@@ -672,6 +688,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/MusicalCreation"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A musical production of a process of music creation. It can be in form of a Song, a Musical Score or a Collection of songs.</rdfs:comment>
         <rdfs:label>MusicalComposition</rdfs:label>
     </owl:Class>
     
@@ -686,6 +703,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Author"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>The act of creating musical composition. It involves an author, which can be demanded to compose the music or the lyrics.</rdfs:comment>
         <rdfs:label>MusicalCreation</rdfs:label>
     </owl:Class>
     
@@ -694,6 +712,7 @@
     <!-- https://w3id.org/ocm/ontology/MusicalInstrument -->
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/MusicalInstrument">
+        <rdfs:comment>Component for performing a musical composition. In its more general form can be described as a entity producing sounds.</rdfs:comment>
         <rdfs:label>MusicalInstrument</rdfs:label>
     </owl:Class>
     
@@ -702,6 +721,7 @@
     <!-- https://w3id.org/ocm/ontology/MusicalPerformance -->
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/MusicalPerformance">
+        <rdfs:comment>An event in which a musical composition is performed.</rdfs:comment>
         <rdfs:label>MusicalPerformance</rdfs:label>
     </owl:Class>
     
@@ -711,6 +731,7 @@
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/MusicalScore">
         <rdfs:subClassOf rdf:resource="https://w3id.org/ocm/ontology/MusicalComposition"/>
+        <rdfs:comment>A score consists of musical notation with each instrumental or vocal part, which is usually described by mean of a music sheet.</rdfs:comment>
         <rdfs:label>MusicalScore</rdfs:label>
     </owl:Class>
     
@@ -733,6 +754,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <owl:disjointWith rdf:resource="https://w3id.org/ocm/ontology/Singer"/>
+        <rdfs:comment>A performer which use a physical musical instrument during a musical performance.</rdfs:comment>
         <rdfs:label>Musician</rdfs:label>
     </owl:Class>
     
@@ -742,6 +764,8 @@
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Opera">
         <rdfs:subClassOf rdf:resource="https://w3id.org/ocm/ontology/Collection"/>
+        <rdfs:comment>A musical collection of songs that can contain both songs and arias but that has a synopsis.</rdfs:comment>
+        <rdfs:label>Opera</rdfs:label>
     </owl:Class>
     
 
@@ -756,6 +780,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/AriaPerformance"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A singer which interprets the role of a fictional character protagonist of an Opera.</rdfs:comment>
         <rdfs:label>OperaActor</rdfs:label>
     </owl:Class>
     
@@ -765,6 +790,7 @@
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Performer">
         <rdfs:subClassOf rdf:resource="https://w3id.org/ocm/ontology/Person"/>
+        <rdfs:comment>A person which contributes to a musical performance executing one or more scores of the musical composition object of the performance.</rdfs:comment>
         <rdfs:label>Performer</rdfs:label>
     </owl:Class>
     
@@ -773,6 +799,7 @@
     <!-- https://w3id.org/ocm/ontology/Person -->
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Person">
+        <rdfs:comment>A human being.</rdfs:comment>
         <rdfs:label>Person</rdfs:label>
     </owl:Class>
     
@@ -794,6 +821,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Musician"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A physical object used to produce audible music.</rdfs:comment>
         <rdfs:label>PhysicalInstrument</rdfs:label>
     </owl:Class>
     
@@ -815,6 +843,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Voice"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A performer which use its voice as musical instrument during a musical performance.</rdfs:comment>
         <rdfs:label>Singer</rdfs:label>
     </owl:Class>
     
@@ -824,6 +853,7 @@
 
     <owl:Class rdf:about="https://w3id.org/ocm/ontology/Song">
         <rdfs:subClassOf rdf:resource="https://w3id.org/ocm/ontology/MusicalComposition"/>
+        <rdfs:comment>General type of musical composition which can also be a part of Musical Collection.</rdfs:comment>
         <rdfs:label>Song</rdfs:label>
     </owl:Class>
     
@@ -845,6 +875,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Voice"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A musical score defined for voice parts.</rdfs:comment>
         <rdfs:label>VocalScore</rdfs:label>
     </owl:Class>
     
@@ -866,6 +897,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/Singer"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>Human voice used in a musical context.</rdfs:comment>
         <rdfs:label>Voice</rdfs:label>
     </owl:Class>
     
@@ -881,6 +913,7 @@
                 <owl:allValuesFrom rdf:resource="https://w3id.org/ocm/ontology/LyricWriting"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment>A human being which takes part in the creation of the lyrics for a musical composition.</rdfs:comment>
         <rdfs:label>Writer</rdfs:label>
     </owl:Class>
     

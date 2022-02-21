@@ -1575,7 +1575,7 @@ for id, row in tqdm(alignments.iterrows(), total=len(alignments)):
 ########## ENTITY LINKING ##########
 print("########## ENTITY LINKING ##########")
 
-print("Linking entities on DBPedia...")
+print("Linking entities on DBpedia...")
 f = open('../alignment/linking.txt')
 for row in tqdm(f.readlines()):
     source, target, score = row.split('\t')

@@ -1573,13 +1573,21 @@ for id, row in tqdm(alignments.iterrows(), total=len(alignments)):
         ))
 
 ########## ENTITY LINKING ##########
-# print("########## ENTITY LINKING ##########")
-#
-# print("Linking entities on DBPedia...")
+print("########## ENTITY LINKING ##########")
+
+print("Linking entities on DBPedia...")
+f = open('../alignment/linking.txt')
+for row in tqdm(f.readlines()):
+    source, target, score = row.split('\t')
+    # owl:sameAs
+    knowledge_graph.add((
+        URIRef(source[1:-1]),   # remove < and >
+        OWL.sameAs,
+        URIRef(target[1:-1])    # remove < and >
+    ))
 
 final_graph = ontology + knowledge_graph
 final_graph.bind("ocm", ocm)
-# final_graph.bind("arco", arco)
 print("######################################################################")
 print("Ontology statements: {}".format(len(ontology)))
 print("Knowledge graph statements: {}".format(len(knowledge_graph)))
